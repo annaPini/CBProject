@@ -1,0 +1,29 @@
+#!/bin/bash
+#PBS -l select=1:ncpus=16:mpiprocs=16:mem=10GB
+#PBS -l walltime=05:00:00
+#PBS -q short_cpuQ
+#PBS -N 8DFN_post
+#PBS -o logs/step3_out
+#PBS -e logs/step3_err
+
+module load gromacs-2021.4
+export OMP_NUM_THREADS=1
+cd $PBS_O_WORKDIR
+
+for run in 8DFN_full 8DFN_half 7SI9_full 7SI9_half
+do
+    cd ../$run
+
+    mkdir 5_POST
+    cp 3_NPT/npt.gro 5_POST/md.gro
+
+    ############################################################################ POST-PROCESSING
+    echo 1 0 | gmx trjconv -s 4_MD/md_plain.tpr -f 4_MD/md_plain.xtc -o 5_POST/md-nojump.xtc -pbc nojump -center
+
+    echo 1 0 | gmx trjconv -s 4_MD/md_plain.tpr -f 5_POST/md-nojump.xtc -o 5_POST/md-rottrans.xtc -fit rot+trans
+    rm 5_POST/md-nojump.xtc
+
+    echo 1 0 | gmx trjconv -s 4_MD/md_plain.tpr -f 5_POST/md-rottrans.xtc -o 5_POST/md-center.xtc -pbc mol -center
+    rm 5_POST/md-rottrans.xtc
+
+done
