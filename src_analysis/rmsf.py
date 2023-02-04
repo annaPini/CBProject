@@ -1,5 +1,5 @@
 from parameters import *
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
 import MDAnalysis as mda
 from MDAnalysis.analysis.rms import RMSF
 
@@ -8,7 +8,7 @@ def calc_rmsf(gro_dir, traj_dir, out_dir):
     ca_atoms = traj.select_atoms("protein and name CA")
     print("calculating RMSF...")
     rmsf_CA = RMSF(ca_atoms).run()
-    np.save(out_dir, rmsf_CA.rmsf, allow_pickle=False)
+    np.save(out_dir, rmsf_CA.rmsf, allow_pickle = False)
     print("done")
 
 def vis_rmsf(rmsf_dir):
@@ -24,7 +24,7 @@ if __name__ == "__main__":
         RMSF_OUT = POSTDIR / f"{TRAJECTORY_NAME}-rmsf.npy"
         GRO = POSTDIR / f"{SYSTEM_NAME}.gro"
         XTC = POSTDIR / f"{TRAJECTORY_NAME}.xtc"
-        
+
         if not RMSF_OUT.exists():
             calc_rmsf(GRO, XTC, RMSF_OUT)
 

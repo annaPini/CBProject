@@ -56,13 +56,16 @@ def plot_density(info):
             value = -density.flatten(),
             isomin = -DENSITY_TRESHOLD_UPPER,
             isomax = -DENSITY_TRESHOLD_LOWER,
-            opacity = 0.07, # needs to be small to see through all surfaces
+            opacity = 0.05, # needs to be small to see through all surfaces
             opacityscale = "uniform",
             surface_count = 50, # needs to be a large number for good volume rendering
-            colorscale = ["red", "orange", "yellow"],
+            colorscale = ["blue", "white", "magenta"],
         )
     )
 
+def plot_protein(info):
+    for v,f in zip(*load_vertices_faces(info)):
+        plot_layer(v, f)
 
 # //////////////////////////////////////////////////////////////////////////////
 if __name__ == "__main__":
@@ -70,12 +73,14 @@ if __name__ == "__main__":
     fig = go.Figure()
 
     plot_density(info)
-    #
-    # for v,f in zip(*load_vertices_faces(info)):
-    #     plot_layer(v, f)
+    plot_protein(info)
 
     fig.update_layout(margin = dict(l = 0, r = 0, b = 0, t = 0))
-    fig.update_scenes(xaxis_visible = False, yaxis_visible = False, zaxis_visible = False, bgcolor = "rgb(0,0,0)")
+    fig.update_scenes(xaxis_visible = False, yaxis_visible = False, zaxis_visible = False, bgcolor = "rgb(0,0,50)")
     fig.show()
 
 # //////////////////////////////////////////////////////////////////////////////
+
+# GREEN:    hydrophilic residues
+# YELLOW:   hydrophobic residues
+# RED:      active site

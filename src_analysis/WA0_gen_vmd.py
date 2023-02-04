@@ -3,6 +3,8 @@ import MDAnalysis as mda
 
 # //////////////////////////////////////////////////////////////////////////////
 def gen_cut_xtc(gro_path, xtc_path, wa_gro_path, wa_xtc_path, info):
+    print(">>> Cutting the frames of interest...")
+
     traj = mda.Universe(str(gro_path), str(xtc_path))
     protein = traj.select_atoms("protein")
 
@@ -15,15 +17,17 @@ def gen_cut_xtc(gro_path, xtc_path, wa_gro_path, wa_xtc_path, info):
 
 
 def gen_vmd(gro_path, xtc_path, vmd_path, info):
+    print(">>> Generating VMD visualization state...")
+
     gro_path = str(gro_path).replace('\\', '/')
     xtc_path = str(xtc_path).replace('\\', '/')
 
-    out = """color change rgb red 0 0 1
-color change rgb blue 0 0 1
-color change rgb green 0 0 1
-color change rgb white 0 1 1
-color change rgb white 0 1 1
-color change rgb cyan 0 1 0\n\n"""
+    out = """color change rgb red 0 1 0;   # acidic (hydrophilic)
+color change rgb blue 0 1 0;  # basic (hydrophilic)
+color change rgb green 0 1 0; # polar (hydrophilic)
+color change rgb white 1 1 0; # non-polar (hydrophobic)
+color change rgb cyan 1 0 0;  # active site
+\n"""
 
     out += f"mol new {gro_path} type gro first 0 last -1 step 1 filebonds 1 autobonds 1 waitfor all\n"
     out += f"mol addfile {xtc_path} type xtc first 0 last -1 step 1 filebonds 1 autobonds 1 waitfor all\n"
