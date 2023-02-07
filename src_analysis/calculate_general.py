@@ -31,10 +31,10 @@ def calc_rmsf(traj, rmsf_dir):
     print(f">>> Preparing '{rmsf_dir.name}'...")
 
     ca_atoms = traj.select_atoms("protein and name CA")
-    print("calculating RMSF...")
+    print("...>>> Calculating RMSF...")
     rmsf_CA = RMSF(ca_atoms).run()
     np.save(rmsf_dir, rmsf_CA.rmsf, allow_pickle = False)
-    print("done")
+    print("...>>> Done.")
 
 # ------------------------------------------------------------------------------
 def calc_rgyr(traj, rgyr_dir):
@@ -42,7 +42,7 @@ def calc_rgyr(traj, rgyr_dir):
 
     rgyr = [traj.select_atoms("protein and name CA").radius_of_gyration() for _ in traj.trajectory[:]]
     np.save(rgyr_dir, rgyr, allow_pickle = False)
-    print("done")
+    print("...>>> Done.")
 
 # ------------------------------------------------------------------------------
 def calc_cmap(coords, cmap_dir):
@@ -51,7 +51,12 @@ def calc_cmap(coords, cmap_dir):
     print("...>>> Calculating contact map...")
     d_CaCa = distances.distance_array(coords, coords)
     np.save(cmap_dir, d_CaCa, allow_pickle = False)
-    print("done")
+    print("...>>> Done.")
+
+    # print("...>>> Calculating contact map...")
+    # cmaps = [distances.distance_array(frame, frame) for frame in coords] # large output!
+    # np.save(cmap_dir, cmaps, allow_pickle = False)
+    # print("done")
 
 # //////////////////////////////////////////////////////////////////////////////
 if __name__ == "__main__":
@@ -73,5 +78,6 @@ if __name__ == "__main__":
         if not PATH_RMSF.exists(): calc_rmsf(traj, PATH_RMSF)
         if not PATH_RGYR.exists(): calc_rgyr(traj, PATH_RGYR)
         if not PATH_CMAP.exists(): calc_cmap(coords[0], PATH_CMAP)
+        # if not PATH_CMAP.exists(): calc_cmap(coords, PATH_CMAP)
 
 # //////////////////////////////////////////////////////////////////////////////

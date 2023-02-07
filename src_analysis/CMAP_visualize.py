@@ -10,9 +10,10 @@ def vis_cmap(cmap_dir,run):
     plt.show()
 
 def compare_cmap(gro_dir, traj_dir, f1, f2, out_dir1, out_dir2):
-    # we calculate all the cmap matrices in calculate_general.py
-    # you can just load up 2 of them here and compare them using plots!
-    # no need to recalculate them
+    ### so my original idea was that we could calculate the cmap for all frames
+    ### in calculate_general and then just load the cmap of specific frames when needed,
+    ### but I just tried it and the output is large (4GB), also the computation of cmap is
+    ### relatively light, so indeed it makes sense to calculate it each time
 
     traj1 = mda.Universe(str(gro_dir), str(traj_dir))[f1]
     ca_atoms1 = traj1.select_atoms("protein and name CA")
