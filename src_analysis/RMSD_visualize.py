@@ -7,30 +7,20 @@ class RMSDPlotter:
     init_ref_frame = 0
     init_rmsd_treshold = 2
 
-    def __init__(self, rmsd_mat_path, wa_info_path):
+    def __init__(self, rmsd_mat_path):
         ########## Generic
         print(f">>> Loading RMSD data...")
         self.rmsd_mat = np.load(rmsd_mat_path)
-        self.info = Info(wa_info_path)
 
         ########## RMSD 1D
         self.x = np.arange(self.rmsd_mat.shape[0])
 
-        # self.y
-        # self.rmsd_arr
-        # self.colors
-        # self.line_rmsd
-        # self.line_treshold
-        # self.slid_ref_frame
-        # self.slid_rmsd_treshold
-
-        # self.button_save
 
     def rmsd_2d(self):
         plt.colorbar(plt.imshow(self.rmsd_mat, vmax = 5))
 
 
-    def rmsd_1d_sliders(self, WA_button = False):
+    def rmsd_1d_sliders(self, WAD_button = False):
         plt.subplots()
         plt.subplots_adjust(bottom = 0.25, top = 0.9)
 
@@ -48,9 +38,9 @@ class RMSDPlotter:
         self.slid_ref_frame.on_changed(self.rmsd_1d_update_plot)
         self.slid_rmsd_treshold.on_changed(self.rmsd_1d_update_plot)
 
-        if WA_button:
+        if WAD_button:
             self.button_save = Button(ax = plt.axes((.8, .05, .2, .1)), label = "Select WA frames")
-            self.button_save.on_clicked(self.rmsd_1d_WA_select_frames)
+            self.button_save.on_clicked(self.rmsd_1d_WAD_select_frames)
 
 
     def rmsd_1d_color(self, ref_frame, rmsd_treshold):
@@ -74,14 +64,16 @@ class RMSDPlotter:
 
         self.line_treshold[0].set_data(self.x, self.y)
 
-    def rmsd_1d_WA_select_frames(self, val):
+    def rmsd_1d_WAD_select_frames(self, val):
         ref_frame = self.slid_ref_frame.val
         rmsd_treshold = self.slid_rmsd_treshold.val
 
         self.rmsd_arr = self.rmsd_mat[ref_frame]
         frames = [int(f) for f in self.x[self.rmsd_arr <= rmsd_treshold]]
 
-        self.info.update(
+        info = Info(DIR_DA_WAD / f"{CURRENT_RUN}-{ref_frame}-info.json")
+
+        info.update(
             rsmd_treshold = rmsd_treshold,
             ref_frame = ref_frame,
             ref_frame_index = frames.index(ref_frame),
@@ -90,23 +82,16 @@ class RMSDPlotter:
 
 # //////////////////////////////////////////////////////////////////////////////
 if __name__ == "__main__":
-    for run in RUNS[2:3]:
-        POSTDIR = get_POSTDIR(run)
-        RMSD = POSTDIR / f"{TRAJECTORY_NAME}-rmsd.npy"
+    for run in RUNS[:1]:
+        PATH_RMSD = DIR_DA_GENERAL / f"{run}-rmsd.npy"
 
-        plotter = RMSDPlotter(RMSD, WA_INFO_PATH)
+        plotter = RMSDPlotter(PATH_RMSD)
         print(f">>> Plotting RMSD data...")
 
         ###################################################################
-        # plotter.rmsd_1d_sliders()
-        # plotter.rmsd_1d_sliders(WA_button = True)
-
-        ###################################################################
+        # plotter.rmsd_1d_sliders(WAD_button = True)
         plotter.rmsd_2d()
 
-
-        ###################################################################
-        # plt.title(run)
 
         plt.show()
 
