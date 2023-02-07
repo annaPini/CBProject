@@ -1,24 +1,24 @@
-import json
+import os,  json
 import numpy as np
 from pathlib import Path
 
 # //////////////////////////////////////////////////////////////////////////////
 
 ####################################### PARAMETERS
-##### General
-# DIR_PROJECT = Path(os.getcwd()).parent
-DIR_PROJECT = Path("D:/CulebraExt/ComputationalBiophysicsSimulations/project")
 
+##### General
+DIR_PROJECT = Path(os.getcwd()).parent
 RUNS = ["mt1_rep0", "mt1_rep1", "mt2_rep0", "mt2_rep1", "wt1_rep0", "wt1_rep1", "wt2_rep0", "wt2_rep1"]
 CURRENT_RUN = "mt1_rep0"
 
-##### Wetness Analysis (WA)
+##### Wetness Average Density (WAD)
 WAD_REF_FRAME = "0"
 WAD_DIVISIONS = 20
 WAD_DENSITY_TRESHOLD_LOWER = 0
 WAD_DENSITY_TRESHOLD_UPPER = 3
 
 ####################################### DIRECTORIES
+
 DIR_DMD = DIR_PROJECT / "data_md"
 DIR_DA = DIR_PROJECT / "data_analysis"
 

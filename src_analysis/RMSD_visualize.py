@@ -89,8 +89,8 @@ if __name__ == "__main__":
         print(f">>> Plotting RMSD data...")
 
         ###################################################################
-        # plotter.rmsd_1d_sliders(WAD_button = True)
-        plotter.rmsd_2d()
+        plotter.rmsd_1d_sliders(WAD_button = True)
+        # plotter.rmsd_2d()
 
 
         plt.show()

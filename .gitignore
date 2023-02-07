@@ -7,3 +7,9 @@
 *.doc
 
 src_analysis/mail.txt
+
+data_analysis/
+*1_EM/
+*2_NVT/
+*3_NPT/
+*4_MD/
