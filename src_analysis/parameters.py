@@ -36,9 +36,9 @@ PATH_WAD_INFO = DIR_DA_WAD / f"{WAD_NAME}-info.json"
 
 ####################################### OTHER CONSTANTS
 
-RED   = 1, 0, 0
-GREEN = 0, 1, 0
-BLUE  = 0, 0, 1
+RED   = 1, 0, 0, 1
+GREEN = 0, 1, 0, 1
+BLUE  = 0, 0, 1, 1
 
 ####################################### CLASSES
 
