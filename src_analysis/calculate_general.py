@@ -47,13 +47,16 @@ def calc_rgyr(traj, rgyr_dir):
     print("...>>> Done.")
 
 # ------------------------------------------------------------------------------
-def calc_cmap(coords, cmap_dir):
+def calc_cmap(coords, cmap_dir, frame = 0): # for the backbone
     print(f">>> Preparing '{cmap_dir.name}'...")
 
     print("...>>> Calculating contact map...")
-    d_CaCa = distances.distance_array(coords, coords)
-    np.save(cmap_dir, d_CaCa, allow_pickle = False)
+    # d_CaCa = distances.distance_array(coords, coords)
+    d_CaCa = distances.distance_array(coords[frame], coords[frame])
+    # np.save(cmap_dir, d_CaCa, allow_pickle = False)
     print("...>>> Done.")
+
+    return d_CaCa
 
 # ------------------------------------------------------------------------------
 def calc_link(rmsd_dir, link_dir, link_method):
@@ -63,16 +66,17 @@ def calc_link(rmsd_dir, link_dir, link_method):
     np.save(link_dir, Z, allow_pickle = False)
     print("...>>> Done.")
 
-def calc_cluster(link_dir, cluster_dir, t, label_criterion):
-    print(f">>> Preparing '{cluster_dir.name}'...")
-    Z = np.load(link_dir)
-    labels = fcluster(Z, t = t, criterion = label_criterion)
-    np.save(cluster_dir, labels, allow_pickle = False)
-    print("...>>> Done.")
+# def calc_cluster(link_dir, cluster_dir, t, label_criterion):
+#     print(f">>> Preparing '{cluster_dir.name}'...")
+#     Z = np.load(link_dir)
+#     labels = fcluster(Z, t = t, criterion = label_criterion)
+#     np.save(cluster_dir, labels, allow_pickle = False)
+#     print("...>>> Done.")
 
 # //////////////////////////////////////////////////////////////////////////////
 if __name__ == "__main__":
-    for run in RUNS[:1]:
+    for run in RUNS:
+        print(f"***** CURRENT RUN: {run} *****")
         PATH_GRO     = DIR_DA_TRAJECTORIES / f"{run}.gro"
         PATH_XTC     = DIR_DA_TRAJECTORIES / f"{run}.xtc"
         PATH_COORDS  = DIR_DA_TRAJECTORIES / f"{run}-coords.npy"
@@ -94,6 +98,6 @@ if __name__ == "__main__":
         if not PATH_CMAP.exists(): calc_cmap(coords[0], PATH_CMAP)
 
         if not PATH_LINK.exists(): calc_link(PATH_RMSD, PATH_LINK, link_method = "ward")
-        if not PATH_CLUSTER.exists(): calc_cluster(PATH_LINK, PATH_CLUSTER, t = 500, label_criterion = "distance")
+        # if not PATH_CLUSTER.exists(): calc_cluster(PATH_LINK, PATH_CLUSTER, t = 900, label_criterion = "distance")
 
 # //////////////////////////////////////////////////////////////////////////////

@@ -9,7 +9,7 @@ from pathlib import Path
 ##### General
 DIR_PROJECT = Path(os.getcwd()).parent
 RUNS = ["mt1_rep0", "mt1_rep1", "mt2_rep0", "mt2_rep1", "wt1_rep0", "wt1_rep1", "wt2_rep0", "wt2_rep1"]
-CURRENT_RUN = "mt1_rep0"
+CURRENT_RUN = "mt2_rep0"
 
 ##### Wetness Average Density (WAD)
 WAD_REF_FRAME = "0"
@@ -75,7 +75,7 @@ class Info:
 # 8f - 8h*2
 # 7f - 7h*2
 
-# python3 -m virtualenv pyinteraph_venv
+# source pyinteraph_venv/bin/activate
 # cd /media/sf_CulebraBox/NDProjects/temp_project/8DFN_full/pyinteraph
 # pyinteraph -s md_plain.tpr -t md-rottrans.xtc -r md.gro --sb-co 5 -b --sb-graph sb-graph.dat --ff-masses charmm27 -v --sb-cg-file charged_groups.ini
 
