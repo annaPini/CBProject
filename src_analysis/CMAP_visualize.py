@@ -33,10 +33,16 @@ def compare_cmap(gro_dir, traj_dir, f1, f2, out_dir1, out_dir2):
 
 if __name__ == "__main__":
     for run in RUNS:
-        PATH_CMAP = DIR_DA_GENERAL / f"{run}-cmap.npy"
+        PATH_CMAP1 = DIR_DA_GENERAL / f"{run}-cmap1.npy"
+        PATH_CMAP2 = DIR_DA_GENERAL / f"{run}-cmap2.npy"
+        PATH_GRO = DIR_DA_TRAJECTORIES / f"{run}.gro"
+        PATH_XTC = DIR_DA_TRAJECTORIES / f"{run}.xtc"
 
-        #plt.title(run)
-        vis_cmap(CMAP_OUT,run)
+        compare_cmap(PATH_GRO, PATH_XTC, f1, f2, PATH_CMAP1, PATH_CMAP2)
+        
+        vis_cmap(PATH_CMAP1,run)
+        vis_cmap(PATH_CMAP2,run)
+
         # compare 2 cmaps
         #compare_cmap(GRO, XTC, 3, 5, CMAP_OUT1, CMAP_OUT2)
         #vis_cmap(CMAP_OUT1, run)
