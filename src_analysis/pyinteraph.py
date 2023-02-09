@@ -45,31 +45,32 @@ PATH_SH = "pyinteraph.sh"
 # command = f"pyinteraph -s {PATH_TPR} -t {PATH_XTC} -r {PATH_GRO} --sb-co 5 -b --sb-graph {SB_GRAPH} --ff-masses charmm27 -v --sb-cg-file {CH_GROUPS}"
 #
 # # H bonds
-command = f"pyinteraph -s {PATH_TPR} -t {PATH_XTC} -r {PATH_GRO} -y --hb-graph {HB_GRAPH} --ff-masses charmm27 -v --hb-ad-file {H_BONDS}"
+# command = f"pyinteraph -s {PATH_TPR} -t {PATH_XTC} -r {PATH_GRO} -y --hb-graph {HB_GRAPH} --ff-masses charmm27 -v --hb-ad-file {H_BONDS}"
 #
 # # Hydrophobic interaction
 # command = f"pyinteraph -s {PATH_TPR} -t {PATH_XTC} -r {PATH_GRO} -f --hc-co 5 -f --hc-graph {HC_GRAPH} --ff-masses charmm27 -v --hc-residues ALA,VAL,LEU,ILE,PHE,PRO,MET,TRP"
 
+command = '\n'.join([
+    # # cutoff for occurrence percentage
+    f"filter_graph -d {SB_GRAPH_ALL} -c {CLUSTER_SIZE_SB} -p {CLUSTER_PLOT_SB}",
+    # filter_graph -d HB_GRAPH_ALL -c CLUSTER_SIZE_HB -p CLUSTER_PLOT_HB
+    f"filter_graph -d {HC_GRAPH_ALL} -c {CLUSTER_SIZE_HC} -p {CLUSTER_PLOT_HC}",
+
+
+    # # filtering the graphs using the identified cutoff of the occurrence percentage
+    f"filter_graph -d {SB_GRAPH_ALL} -o {SB_GRAPH_FILTERED} -t 20.0",
+    # filter_graph -d HB_GRAPH_ALL -o HB_GRAPH_FILTERED -t 20.0
+    f"filter_graph -d {HC_GRAPH_ALL} -o {HC_GRAPH_FILTERED} -t 20.0",
+    #
+    # # generating a macroIIN
+    # filter_graph -d HB_GRAPH_FILTERED -d HC_GRAPH_FILTERED -d SB_GRAPH_FILTERED -o MACRO_IIN_UNWEIGHTED
+    #
+    # # generating a macroIIN weighted
+    #     # generate the energy interaction map
+    # pyinteraph -s PATH_TPR -t PATH_XTC -r PATH_GRO -p --ff-masses charmm27 -v --kbp-graph KBP_GRAPH
+    #     # generating the macroIIN starting from the KBP_GRAPH
+    # filter_graph -d hb-graph_filtered.dat -d hc-graph_filtered.dat -d sb-graph_filtered.dat -o macro_IIN_weighted.dat -w kbp-graph.dat
+])
+
+
 with open(PATH_SH, 'w') as file: file.write(command.replace("\\", "/"))
-
-
-
-#
-# # cutoff for occurrence percentage
-f"filter_graph -d {SB_GRAPH_ALL} -c {CLUSTER_SIZE_SB} -p {CLUSTER_PLOT_SB}"
-# filter_graph -d HB_GRAPH_ALL -c CLUSTER_SIZE_HB -p CLUSTER_PLOT_HB
-# filter_graph -d HC_GRAPH_ALL -c CLUSTER_SIZE_HC -p CLUSTER_PLOT_HC
-#
-# # filtering the graphs using the identified cutoff of the occurrence percentage
-# filter_graph -d SB_GRAPH_ALL -o SB_GRAPH_FILTERED -t 20.0
-# filter_graph -d HB_GRAPH_ALL -o HB_GRAPH_FILTERED -t 20.0
-# filter_graph -d HC_GRAPH_ALL -o HC_GRAPH_FILTERED -t 20.0
-#
-# # generating a macroIIN
-# filter_graph -d SB_GRAPH_FILTERED -d HC_GRAPH_FILTERED -d SB_GRAPH_FILTERED -o MACRO_IIN_UNWEIGHTED
-#
-# # generating a macroIIN weighted
-#     # generate the energy interaction map
-# pyinteraph -s PATH_TPR -t PATH_XTC -r PATH_GRO -p --ff-masses charmm27 -v --kbp-graph KBP_GRAPH
-#     # generating the macroIIN starting from the KBP_GRAPH
-# filter_graph -d hb-graph_filtered.dat -d hc-graph_filtered.dat -d sb-graph_filtered.dat -o macro_IIN_weighted.dat -w kbp-graph.dat

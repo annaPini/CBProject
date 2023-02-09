@@ -192,7 +192,7 @@ class RMSD_1D_Clustering(RMSD_1D):
 
 # //////////////////////////////////////////////////////////////////////////////
 if __name__ == "__main__":
-    for run in RUNS[:1]:
+    for run in RUNS[1:2]:
         PATH_RMSD = DIR_DA_GENERAL / f"{run}-rmsd.npy"
         PATH_CLUSTER = DIR_DA_GENERAL / f"{run}-cluster.npy"
 
@@ -203,10 +203,10 @@ if __name__ == "__main__":
         # print(cluster_mat.shape)
 
         ### should assign instances to variables, otherwise sliders might become irresponsive! (garbage collecion?)
-        # RMSD_2D(rmsd_mat)
-        # rmsd_0 = RMSD_1D(rmsd_mat)
+        rmsd_2d = RMSD_2D(rmsd_mat)
+        rmsd_0 = RMSD_1D(rmsd_mat)
         # rmsd_1 = RMSD_1D_WAD(rmsd_mat)
-        rmsd_2 = RMSD_1D_Clustering(rmsd_mat, cluster_mat)
+        # rmsd_2 = RMSD_1D_Clustering(rmsd_mat, cluster_mat)
 
         plt.show()
 
