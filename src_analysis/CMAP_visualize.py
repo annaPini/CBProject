@@ -7,17 +7,9 @@ import MDAnalysis as mda
 def vis_cmap(cmap,run):
     plt.figure(figsize=((10,10)))
     plt.title(run)
-    img = plt.imshow(cmap)
+    img = plt.imshow(-cmap, cmap = "hot")
+    # img = plt.imshow(-cmap, cmap = "Reds", vmin = -cmap.max(), vmax = 0)
     plt.colorbar(img)
-
-def vis_2cmap(cmap1, cmap2, run):
-    # cmap1 = np.ones((10,10)) + np.arange(10)
-    # cmap2 = np.ones((10,10)) + np.arange(10)*10
-
-    fig, axs = plt.subplots(1,2)
-    img1 = axs[0].imshow(cmap1)
-    img2 = axs[1].imshow(cmap2)
-    fig.colorbar(img1)
 
 
 def diff_cmap(cmap1, cmap2, run):
@@ -25,12 +17,14 @@ def diff_cmap(cmap1, cmap2, run):
 
     plt.figure(figsize=((10,10)))
     plt.title(run)
-    img = plt.imshow(diff)
+    # img = plt.imshow(-cmap, cmap = "Reds", vmin = -cmap.max(), vmax = 0)
+    img = plt.imshow(-diff, cmap = "hot")
     plt.colorbar(img)
 
 
 if __name__ == "__main__":
-    for run in RUNS[:1]:
+    for run in ["mt1_rep0", "mt2_rep0"]:
+    # for run in RUNS[2:3]:
         PATH_COORDS = DIR_DA_TRAJECTORIES / f"{run}-coords.npy"
         PATH_CMAP1 = DIR_DA_GENERAL / f"{run}-cmap1.npy"
         PATH_CMAP2 = DIR_DA_GENERAL / f"{run}-cmap2.npy"
@@ -58,14 +52,13 @@ if __name__ == "__main__":
         # calc_cmap(coords2, PATH_CMAP2)#, frame = 5000)
 
         vis_cmap(cmap1, run)
-        vis_cmap(cmap2, run)
+        # vis_cmap(cmap2, run)
 
-        # vis_2cmap(cmap1, cmap2, "DIFF")
-        diff_cmap(cmap1, cmap2, "DIFF")
+        # diff_cmap(cmap1, cmap2, "DIFF")
 
-        plt.show()
 
         # compare 2 cmaps
         #compare_cmap(GRO, XTC, 3, 5, CMAP_OUT1, CMAP_OUT2)
         #vis_cmap(CMAP_OUT1, run)
         #vis_cmap(CMAP_OUT2, run)
+    plt.show()

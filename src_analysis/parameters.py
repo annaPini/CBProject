@@ -81,3 +81,6 @@ class Info:
 
 # wt = 7SI9
 # mt = 8DFN
+
+# ACTIVE SITE: 41, 145
+# MUTATION: 164 (wt = H, mt = N)

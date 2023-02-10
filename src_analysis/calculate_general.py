@@ -66,12 +66,12 @@ def calc_link(rmsd_dir, link_dir, link_method):
     np.save(link_dir, Z, allow_pickle = False)
     print("...>>> Done.")
 
-# def calc_cluster(link_dir, cluster_dir, t, label_criterion):
-#     print(f">>> Preparing '{cluster_dir.name}'...")
-#     Z = np.load(link_dir)
-#     labels = fcluster(Z, t = t, criterion = label_criterion)
-#     np.save(cluster_dir, labels, allow_pickle = False)
-#     print("...>>> Done.")
+def calc_cluster(link_dir, cluster_dir, t, label_criterion):
+    print(f">>> Preparing '{cluster_dir.name}'...")
+    Z = np.load(link_dir)
+    labels = fcluster(Z, t = t, criterion = label_criterion)
+    np.save(cluster_dir, labels, allow_pickle = False)
+    print("...>>> Done.")
 
 # //////////////////////////////////////////////////////////////////////////////
 if __name__ == "__main__":
@@ -98,6 +98,6 @@ if __name__ == "__main__":
         if not PATH_CMAP.exists(): calc_cmap(coords[0], PATH_CMAP)
 
         if not PATH_LINK.exists(): calc_link(PATH_RMSD, PATH_LINK, link_method = "ward")
-        # if not PATH_CLUSTER.exists(): calc_cluster(PATH_LINK, PATH_CLUSTER, t = 900, label_criterion = "distance")
+        if not PATH_CLUSTER.exists(): calc_cluster(PATH_LINK, PATH_CLUSTER, t = 900, label_criterion = "distance")
 
 # //////////////////////////////////////////////////////////////////////////////
