@@ -69,9 +69,10 @@ plt.legend(*sc.legend_elements(), bbox_to_anchor=(1.05, 1), loc=2)
 
 pca_data = pd.DataFrame(space,columns=["first_comp","second_comp","third_comp"])
 
-# df = pca_data
-last_frames = 500
-df = pca_data.tail(last_frames)
+df = pca_data
+
+# last_frames = 500
+# df = pca_data.tail(last_frames)
 
 
 fig = px.scatter_3d(df, x="first_comp", y="second_comp", z="third_comp",

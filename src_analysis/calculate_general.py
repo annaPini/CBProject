@@ -66,12 +66,8 @@ def calc_link(rmsd_dir, link_dir, link_method):
     np.save(link_dir, Z, allow_pickle = False)
     print("...>>> Done.")
 
-def calc_cluster(link_dir, cluster_dir, t, label_criterion):
-    print(f">>> Preparing '{cluster_dir.name}'...")
-    Z = np.load(link_dir)
-    labels = fcluster(Z, t = t, criterion = label_criterion)
-    np.save(cluster_dir, labels, allow_pickle = False)
-    print("...>>> Done.")
+def calc_cluster(Z, t, label_criterion):
+    return fcluster(Z, t = t, criterion = label_criterion)
 
 # //////////////////////////////////////////////////////////////////////////////
 if __name__ == "__main__":
@@ -84,9 +80,9 @@ if __name__ == "__main__":
         PATH_RMSD    = DIR_DA_GENERAL      / f"{run}-rmsd.npy"
         PATH_RMSF    = DIR_DA_GENERAL      / f"{run}-rmsf.npy"
         PATH_RGYR    = DIR_DA_GENERAL      / f"{run}-rgyr.npy"
-        PATH_CMAP    = DIR_DA_GENERAL      / f"{run}-cmap.npy"
+        # PATH_CMAP    = DIR_DA_GENERAL      / f"{run}-cmap.npy"
         PATH_LINK    = DIR_DA_GENERAL      / f"{run}-link.npy"
-        PATH_CLUSTER = DIR_DA_GENERAL      / f"{run}-cluster.npy"
+        # PATH_CLUSTER = DIR_DA_GENERAL      / f"{run}-cluster.npy"
 
         #########################################
         traj = mda.Universe(str(PATH_GRO), str(PATH_XTC))
@@ -95,9 +91,9 @@ if __name__ == "__main__":
         if not PATH_RMSD.exists(): calc_rmsd(coords, PATH_RMSD)
         if not PATH_RMSF.exists(): calc_rmsf(traj, PATH_RMSF)
         if not PATH_RGYR.exists(): calc_rgyr(traj, PATH_RGYR)
-        if not PATH_CMAP.exists(): calc_cmap(coords[0], PATH_CMAP)
+        # if not PATH_CMAP.exists(): calc_cmap(coords[0], PATH_CMAP)
 
         if not PATH_LINK.exists(): calc_link(PATH_RMSD, PATH_LINK, link_method = "ward")
-        if not PATH_CLUSTER.exists(): calc_cluster(PATH_LINK, PATH_CLUSTER, t = 900, label_criterion = "distance")
+        # if not PATH_CLUSTER.exists(): calc_cluster(PATH_LINK, PATH_CLUSTER, t = 900, label_criterion = "distance")
 
 # //////////////////////////////////////////////////////////////////////////////

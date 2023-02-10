@@ -1,13 +1,9 @@
 from parameters import *
+from calculate_general import calc_cluster
+
 from matplotlib import pyplot as plt
 from matplotlib.widgets import Slider, Button
 from matplotlib.pyplot import cm
-# import matplotlib as mpl
-# cmap = mpl.colormaps['viridis']
-
-# print(dir(cm))
-# print(*mpl.colormaps.keys(), sep = ' ')
-# exit()
 
 # //////////////////////////////////////////////////////////////////////////////
 class RMSDPlotter:
@@ -36,15 +32,16 @@ class RMSD_1D(RMSDPlotter):
         self.fig, self.ax = plt.subplots()
         self.fig.subplots_adjust(bottom = 0.25, top = 0.9)
         # self.ax.set_facecolor((0, 0, 0))
-        # plt.xlabel("Frame")
-        # plt.ylabel("RMSD")
+        self.ax.set_xlabel("Frame")
+        self.ax.set_ylabel("RMSD")
 
-        self.init_plots()
+        self.init_gui()
 
     # --------------------------------------------------------------------------
-    def init_plots(self):
+    def init_gui(self):
         self.set_color(self.init_ref_frame)
-        self.init_line_rmsd()
+        self.init_plot()
+        self.init_slider_ref_frame()
 
     def update_plot(self, val = None):
         self.set_color(self.slid_ref_frame.val)
@@ -56,8 +53,10 @@ class RMSD_1D(RMSDPlotter):
         self.colors[ref_frame] = RED
 
     # --------------------------------------------------------------------------
-    def init_line_rmsd(self):
+    def init_plot(self):
         self.line_rmsd = self.ax.scatter(self.x, self.rmsd_arr, c = self.colors, marker = '.')
+
+    def init_slider_ref_frame(self):
         self.slid_ref_frame = Slider(
             ax = plt.axes((.15, .10, .5, .03)),
             label = "ref_frame", color = "orange" ,
@@ -77,10 +76,11 @@ class RMSD_1D(RMSDPlotter):
 class RMSD_1D_WAD(RMSD_1D):
     init_rmsd_treshold = 2
 
-    def init_plots(self):
+    def init_gui(self):
         self.y = np.zeros(self.rmsd_mat.shape[0])
         self.set_color(self.init_ref_frame, self.init_rmsd_treshold)
-        self.init_line_rmsd()
+        self.init_plot()
+        self.init_slider_ref_frame()
         self.init_line_treshold()
 
     def update_plot(self, val = None):
@@ -134,26 +134,28 @@ class RMSD_1D_WAD(RMSD_1D):
         self.button_save.label.set_text(f"Saved {len(frames)} frames")
 
 
+
+
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 class RMSD_1D_Clustering(RMSD_1D):
-    def __init__(self, rmsd_mat, cluster_mat):
-        self.cluster_mat = cluster_mat
+    init_clustering_t = 900
+    label_criterion = "distance"
 
-        n = np.max(self.cluster_mat)
-        print(f">>> Coloring {n} clusters...")
+    def __init__(self, rmsd_mat, Z, color_map):
+        self.Z = Z
+        self.color_map = color_map
 
-        # self.cluster_colors = cm.rainbow(np.linspace(0, 1, n))
-        # self.cluster_colors = cm.prism(np.linspace(0, 1, n))
-        self.cluster_colors = cm.hsv(np.linspace(0, 1, n))
-        # np.random.shuffle(self.cluster_colors)
-
+        # np.random.seed(0)
         self.highlight_cluster = False
+
+        self.set_cluster_colors(self.init_clustering_t)
 
         super().__init__(rmsd_mat)
 
-        self.button_toggle_alpha = Button(ax = plt.axes((.75, .05, .2, .1)), label = "Highlight cluster")
-        self.button_toggle_alpha.on_clicked(self.toggle_alpha)
-
+    # --------------------------------------------------------------------------
+    def init_gui(self):
+        super().init_gui()
+        self.init_gui_clustering()
 
     def set_color(self, ref_frame):
         self.rmsd_arr = self.rmsd_mat[ref_frame]
@@ -165,52 +167,123 @@ class RMSD_1D_Clustering(RMSD_1D):
                 a = .1
             self.colors[self.cluster_mat == i + 1] = r,g,b,a
 
-    def toggle_alpha(self, val = None):
-        self.highlight_cluster = not self.highlight_cluster
-        self.update_plot()
+    # --------------------------------------------------------------------------
+    def init_gui_clustering(self):
+        self.slid_clustering_t = Slider(
+            ax = plt.axes((.15, .05, .5, .03)),
+            label = "t value", color = "blue",
+            valstep = 25, valinit = self.init_clustering_t,
+            valmin = 25, valmax = 2000,
+        )
+        self.slid_clustering_t.on_changed(self.update_clustering_t)
 
-        # self.ax.set_facecolor((0, 0, 0) if self.highlight_cluster else (1,1,1))
-        if self.highlight_cluster:
-            self.ax.set_facecolor((0, 0, 0))
-            self.button_toggle_alpha.label.set_text("Show all")
-        else:
-            self.ax.set_facecolor((1, 1, 1))
-            self.button_toggle_alpha.label.set_text("Highlight cluster")
+        self.button_toggle_alpha = Button(ax = plt.axes((.75, .05, .2, .1)), label = f"{self.n_clusters} clusters")
+        self.button_toggle_alpha.on_clicked(self.toggle_alpha)
 
+    def set_cluster_colors(self, t):
+        self.cluster_mat = calc_cluster(self.Z, t, label_criterion = self.label_criterion)
+        self.n_clusters = np.max(self.cluster_mat)
+        self.cluster_colors = cm.__dict__[self.color_map](np.linspace(0, 1, self.n_clusters))
+        # np.random.shuffle(self.cluster_colors)
 
 
     # --------------------------------------------------------------------------
-    # this time colors don't change when updating ref_frame
-    # def update_plot(self, val = None):
-    #     ref_frame = self.slid_ref_frame.val
-    #     self.rmsd_arr = self.rmsd_mat[ref_frame]
-    #
-    #     self.line_rmsd.set_offsets(
-    #         np.append(self.x, self.rmsd_arr).reshape((2, self.x.size)).T
-    #     )
+    def update_clustering_t(self, vale = None):
+        self.set_cluster_colors(self.slid_clustering_t.val)
+        self.button_toggle_alpha.label.set_text(f"{self.n_clusters} clusters")
+        self.update_plot()
 
+    def toggle_alpha(self, val = None):
+        self.highlight_cluster = not self.highlight_cluster
+        self.ax.set_facecolor((0, 0, 0) if self.highlight_cluster else (1, 1, 1))
+        self.update_plot()
+
+
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+class RMSD_1D_Compare(RMSD_1D):
+    def __init__(self, rmsd_mat_0, rmsd_mat_1):
+        self.rmsd_mat1 = rmsd_mat_1
+        super().__init__(rmsd_mat_0)
+
+    # --------------------------------------------------------------------------
+    def set_color(self, ref_frame):
+        super().set_color(ref_frame)
+        self.rmsd_arr1 = self.rmsd_mat1[ref_frame]
+
+    def init_plot(self):
+        self.line_rmsd0 = self.ax.scatter(self.x, self.rmsd_arr, c = self.colors, marker = '+', s = 12)
+        self.line_rmsd1 = self.ax.scatter(self.x, self.rmsd_arr1, c = self.colors/2, marker = 'x', s = 12)
+
+    def update_line_rmsd(self):
+        self.line_rmsd0.set_offsets(
+            np.append(self.x, self.rmsd_arr).reshape((2, self.x.size)).T
+        )
+        self.line_rmsd0.set_color(self.colors)
+
+        self.line_rmsd1.set_offsets(
+            np.append(self.x, self.rmsd_arr1).reshape((2, self.x.size)).T
+        )
+        self.line_rmsd1.set_color(self.colors/2)
+
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 # //////////////////////////////////////////////////////////////////////////////
+
+
 if __name__ == "__main__":
+
+    # COLOR_MAP = "rainbow"
+    # COLOR_MAP = "prism"
+    COLOR_MAP = "hsv"
 
     rmsds = []
 
-    for run in ["wt2_rep0", "wt2_rep1"]:
-    # for run in RUNS[1:2]:
-        PATH_RMSD = DIR_DA_GENERAL / f"{run}-rmsd.npy"
-        PATH_CLUSTER = DIR_DA_GENERAL / f"{run}-cluster.npy"
 
-        rmsd_mat = np.load(PATH_RMSD)
-        cluster_mat = np.load(PATH_CLUSTER)
+    ############################################################################
 
-        # print(cluster_mat)
-        # print(cluster_mat.shape)
+    # for run in ["mt1_rep0"]:
+    # # for run in ["mt1_rep0", "wt1_rep1"]:
+    # # for run in ["wt1_rep0", "mt1_rep1"]:
+    # # for run in RUNS[1:2]:
+    #     PATH_RMSD = DIR_DA_GENERAL / f"{run}-rmsd.npy"
+    #     PATH_LINK = DIR_DA_GENERAL / f"{run}-link.npy"
+    #
+    #
+    #     rmsd_mat = np.load(PATH_RMSD)
+    #     Z = np.load(PATH_LINK)
+    #
+    #     # print(cluster_mat)
+    #     # print(cluster_mat.shape)
+    #
+    #     ##### Add the instances to this list to avoid garbage collection messing up with the plots' sliders
+    #     # rmsds.append(RMSD_2D(rmsd_mat))
+    #     # rmsds.append(RMSD_1D(rmsd_mat))
+    #     # rmsds.append(RMSD_1D_WAD(rmsd_mat))
+    #     rmsds.append(RMSD_1D_Clustering(rmsd_mat, Z, COLOR_MAP))
 
-        ### should assign instances to variables, otherwise sliders might become irresponsive! (garbage collecion?)
-        # rmsds.append(RMSD_2D(rmsd_mat))
-        rmsds.append(RMSD_1D(rmsd_mat))
-        # rmsds.append(RMSD_1D_WAD(rmsd_mat))
-        # rmsds.append(RMSD_1D_Clustering(rmsd_mat, cluster_mat))
+    ############################################################################
+
+    run0 = "mt1_rep0"
+    run1 = "mt1_rep1"
+
+    PATH_RMSD0 = DIR_DA_GENERAL / f"{run0}-rmsd.npy"
+    PATH_RMSD1 = DIR_DA_GENERAL / f"{run1}-rmsd.npy"
+
+    PATH_LINK = DIR_DA_GENERAL / f"{run0}-link.npy"
+    Z = np.load(PATH_LINK)
+
+
+    rmsd_mat0 = np.load(PATH_RMSD0)
+    rmsd_mat1 = np.load(PATH_RMSD1)
+
+    # rmsds.append(RMSD_2D(rmsd_mat0))
+    # rmsds.append(RMSD_1D(rmsd_mat0))
+    # rmsds.append(RMSD_1D_WAD(rmsd_mat0))
+    rmsds.append(RMSD_1D_Clustering(rmsd_mat0, Z, COLOR_MAP))
+    # rmsds.append(RMSD_1D_Compare(rmsd_mat0, rmsd_mat1))
+
+
+    ############################################################################
 
     plt.show()
 

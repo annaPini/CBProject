@@ -20,14 +20,14 @@ def vis_2rgyr(rgyr_dir1,rgyr_dir2):
         plt.plot(arrs[1])
 
     else:
-       
+
         plt.plot(rgyr1)
-        plt.plot(rgyr2) 
+        plt.plot(rgyr2)
 
     plt.show()
 
 if __name__ == "__main__":
-    for run in RUNS:
+    for run in RUNS[:1]:
         PATH_RGYR = DIR_DA_GENERAL / f"{run}-rgyr.npy"
         plt.title(run)
         vis_rgyr(PATH_RGYR)
