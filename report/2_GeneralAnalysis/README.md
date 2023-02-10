@@ -20,20 +20,20 @@ We performed the alignment in the post processing step of the MD simulation, the
 ### RMSD in 1D
 We calculate the RMSD in 1 dimension, taking each frame as the reference. In the following graphs the blu points refer to the rep0 and the red ones to rep1. 
 RMSD_1D_COMPARE:
-- mt1_rep0 & mt1_rep1
-- mt2_rep0 & mt2_rep1
-- wt1_rep0 & wt1_rep1
-- wt2_rep0 & wt2_rep1
+![label](RMSD1D-mt1.png)
+![label](RMSD1D-mt2.png)
+![label](RMSD1D-wt1.png)
+![label](RMSD1D-wt2.png)
+
 ### RMSD in 2D
 It is also possible to build a RMSD matrix and represent it using an heatmap. 
 RMSD_2D:
 
 ![label](RMSD2D-mt1.jpg)
+![label](RMSD2D-mt2.jpg)
+![label](RMSD2D-mt2.jpg)
+![label](RMSD2D-wt2.jpg)
 
-- mt1_rep0 & mt1_rep1
-- mt2_rep0 & mt2_rep1
-- wt1_rep0 & wt1_rep1
-- wt2_rep0 & wt2_rep1
 
 ## RMSF
 The protein is composed of many atoms which move during the evolution of the system. To understand which parts of the protein are more mobile it is useful to calculate the root mean square fluctuations for each atom. 
@@ -55,18 +55,26 @@ RMSF_COMPARE:
 - wt1_rep0 & wt2_rep0
 
 ## Radius of Gyration
+From VMD it can be observed that even though the protein fluctuates, its shape remains constant. To check if the protein elongates during its evolution it is useful to calculate the radius of gyration:
+$$ RGYR(\Delta t) = \sqrt{\frac{\sum_{i=1}^{N}m_{i}(r_{i}(\Delta t)-R_{cm})^{2}}{\sum_{i=1}^{N} m_{i}}}$$
+where 
+- $m_{i}$ is the mass of atom $i$
+- $r_{i}$ is the position of atom $i$ at time $\Delta t$ 
+- $R_{cm}$ is the center of mass
 
-The protein seems to have 
 RGYR_COMPARE:
-    - mt1_rep0 & mt1_rep1
-    - mt2_rep0 & mt2_rep1
-    - wt1_rep0 & wt1_rep1
-    - wt2_rep0 & wt2_rep1
+- mt1_rep0 & mt1_rep1
+- mt2_rep0 & mt2_rep1
+- wt1_rep0 & wt1_rep1
+- wt2_rep0 & wt2_rep1
 
 ## Contact Map
+The protein is constituted by a folded chain composed of atoms linked together. Non subsequent atoms can be near enough to interact even if they are not adjacent. The contact maps shows the links between atoms only for a single frame, and a more detailed analysis of interactions in the protein is performed in the following part of this work.
+Here we show as an example some contact maps calculated at the initial frame of the trajectory. 
+
 
 CMAP_COMPARE:
-    - mt1_rep0 & mt2_rep0
+- mt1_rep0 & mt2_rep0
 
 non possiamo fare un confronto generale come quelli fatti per rmsd, rmsf, gryr perché il pdb iniziale è lo stesso. 
 
