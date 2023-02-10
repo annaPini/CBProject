@@ -8,25 +8,25 @@ from matplotlib.pyplot import cm
 # //////////////////////////////////////////////////////////////////////////////
 class RMSDPlotter:
     def __init__(self, rmsd_mat, title = ''):
-        print(f">>> Loading RMSD data...")
+        print(f">>> Plotting RMSD for '{title}'...")
         self.rmsd_mat = rmsd_mat
 
+        self.fig, self.ax = plt.subplots()
+        self.ax.set_title(title, fontdict = dict(fontsize = 20))
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 class RMSD_2D(RMSDPlotter):
     def __init__(self, rmsd_mat, title = ''):
-        super().__init__(rmsd_mat, title = '')
-        self.fig, self.ax = plt.subplots()
+        super().__init__(rmsd_mat, title)
 
-        self.ax.set_title(title)
-        self.ax.set_xlabel("Frame 0")
-        self.ax.set_ylabel("Frame 1")
+        self.fig.subplots_adjust(bottom = 0.1, top = 0.9, left = 0.15, right = 0.95)
+        self.ax.set_xlabel("Frame A", fontdict = dict(fontsize = 16))
+        self.ax.set_ylabel("Frame B", fontdict = dict(fontsize = 16))
 
-        self.fig.colorbar(
-            self.ax.imshow(self.rmsd_mat,
-            # vmax = 5, 
-            cmap = "Reds")
-        )
+        colorbar = self.fig.colorbar( self.ax.imshow(self.rmsd_mat, cmap = "Reds") )
+
+        self.ax.tick_params(labelsize = 12)
+        colorbar.ax.tick_params(labelsize = 12)
 
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -34,17 +34,15 @@ class RMSD_1D(RMSDPlotter):
     init_ref_frame = 0
 
     def __init__(self, rmsd_mat, title = ''):
-        super().__init__(rmsd_mat, title = '')
+        super().__init__(rmsd_mat, title)
 
         self.x = np.arange(self.rmsd_mat.shape[0])
         self.colors = np.zeros((self.rmsd_mat.shape[0], 4))
 
-        self.fig, self.ax = plt.subplots()
         self.fig.subplots_adjust(bottom = 0.25, top = 0.9)
-
-        self.ax.set_title(title)
-        self.ax.set_xlabel("Frame")
-        self.ax.set_ylabel("RMSD")
+        self.ax.set_xlabel("Frame", fontdict = dict(fontsize = 16))
+        self.ax.set_ylabel("RMSD", fontdict = dict(fontsize = 16))
+        self.ax.tick_params(labelsize = 12)
 
         self.init_gui()
 
@@ -161,7 +159,7 @@ class RMSD_1D_Clustering(RMSD_1D):
 
         self.set_cluster_colors(self.init_clustering_t)
 
-        super().__init__(rmsd_mat, title = '')
+        super().__init__(rmsd_mat, title)
 
     # --------------------------------------------------------------------------
     def init_gui(self):
@@ -222,9 +220,8 @@ class RMSD_1D_Compare(RMSD_1D):
         self.rmsd_arr1 = self.rmsd_mat1[ref_frame]
 
     def init_plot(self):
-        half_red = 1, 0, 0, 0.5
         self.line_rmsd0 = self.ax.scatter(self.x, self.rmsd_arr, color = BLUE, marker = '+', s = 12)
-        self.line_rmsd1 = self.ax.scatter(self.x, self.rmsd_arr1, color = half_red, marker = 'x', s = 12)
+        self.line_rmsd1 = self.ax.scatter(self.x, self.rmsd_arr1, color = HALF_RED, marker = 'x', s = 12)
 
     def update_line_rmsd(self):
         self.line_rmsd0.set_offsets(
@@ -241,16 +238,13 @@ class RMSD_1D_Compare(RMSD_1D):
 
 
 if __name__ == "__main__":
-
     # COLOR_MAP = "rainbow"
     # COLOR_MAP = "prism"
     COLOR_MAP = "hsv"
 
     rmsds = []
 
-
     ############################################################################
-
     for run_preffix in RUN_PREFFIXES:
         run0 = run_preffix + "_rep0"
         run1 = run_preffix + "_rep1"
@@ -260,9 +254,9 @@ if __name__ == "__main__":
         rmsd_mat0 = np.load(PATH_RMSD0)
         rmsd_mat1 = np.load(PATH_RMSD1)
 
-        # rmsds.append(RMSD_1D_Compare(rmsd_mat0, rmsd_mat1, title = run_preffix))
-        rmsds.append(RMSD_2D(rmsd_mat0, title = run0))
-        rmsds.append(RMSD_2D(rmsd_mat1, title = run1))
+        # rmsds.append(RMSD_2D(rmsd_mat0, title = run0))
+        # rmsds.append(RMSD_2D(rmsd_mat1, title = run1))
+        rmsds.append(RMSD_1D_Compare(rmsd_mat0, rmsd_mat1, title = run_preffix))
 
 
     ############################################################################

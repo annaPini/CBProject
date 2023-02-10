@@ -41,6 +41,7 @@ PATH_WAD_INFO = DIR_DA_WAD / f"{WAD_NAME}-info.json"
 RED   = 1, 0, 0, 1
 GREEN = 0, 1, 0, 1
 BLUE  = 0, 0, 1, 1
+HALF_RED = 1, 0, 0, 0.5
 
 ####################################### CLASSES
 
@@ -66,23 +67,41 @@ class Info:
         print(f"--- Updated '{self.path.name}' with {len(data)} parameters.")
 
 # //////////////////////////////////////////////////////////////////////////////
+"""
+    =====================
+    NOTES AND EXTRA STUFF
+    =====================
+    sasa --> "solvent accesible surface area"
+    vmd --> extensions --> volmap tool
 
+    8f - 7f
+    8h - 7h
+    8f - 8h*2
+    7f - 7h*2
 
-######### check "solvent accesible surface area"
+    source pyinteraph_venv/bin/activate
+    cd /media/sf_CulebraBox/NDProjects/temp_project/8DFN_full/pyinteraph
+    pyinteraph -s md_plain.tpr -t md-rottrans.xtc -r md.gro --sb-co 5 -b --sb-graph sb-graph.dat --ff-masses charmm27 -v --sb-cg-file charged_groups.ini
 
-# extensions --> volmap tool
+    ++++++++++++++++++++++++++++++++++++++
+    wt = 7SI9
+    mt = 8DFN
 
-# 8f - 7f
-# 8h - 7h
-# 8f - 8h*2
-# 7f - 7h*2
+    ACTIVE SITE: 41, 145
+    MUTATION: 164 (wt = H, mt = N)
 
-# source pyinteraph_venv/bin/activate
-# cd /media/sf_CulebraBox/NDProjects/temp_project/8DFN_full/pyinteraph
-# pyinteraph -s md_plain.tpr -t md-rottrans.xtc -r md.gro --sb-co 5 -b --sb-graph sb-graph.dat --ff-masses charmm27 -v --sb-cg-file charged_groups.ini
+    ++++++++++++++++++++++++++++++++++++++
+    mt1
+    mt2
+    wt1
+    wt2
 
-# wt = 7SI9
-# mt = 8DFN
-
-# ACTIVE SITE: 41, 145
-# MUTATION: 164 (wt = H, mt = N)
+    mt1_rep0
+    mt1_rep1
+    mt2_rep0
+    mt2_rep1
+    wt1_rep0
+    wt1_rep1
+    wt2_rep0
+    wt2_rep1
+"""

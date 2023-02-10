@@ -14,3 +14,5 @@ data_md/*_rep*
 
 
 *.ipynb
+
+src_analysis/sasa.sh
