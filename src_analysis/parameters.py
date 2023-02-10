@@ -41,7 +41,10 @@ PATH_WAD_INFO = DIR_DA_WAD / f"{WAD_NAME}-info.json"
 RED   = 1, 0, 0, 1
 GREEN = 0, 1, 0, 1
 BLUE  = 0, 0, 1, 1
-HALF_RED = 1, 0, 0, 0.5
+
+HALF_RED   = 1, 0, 0, 0.5
+HALF_GREEN = 0, 1, 0, 0.5
+HALF_BLUE  = 0, 0, 1, 0.5
 
 ####################################### CLASSES
 

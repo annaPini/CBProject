@@ -12,27 +12,43 @@ def vis_rmsf(rmsf_dir):
     plt.show()
     print(f"Max rmsf for run {run} is {np.argmax(rmsf)}")
 
-def vis_2rmsf(rmsf_dir1,rmsf_dir2):
-    rmsf1 = np.load(rmsf_dir1)
-    rmsf2 = np.load(rmsf_dir2)
+def vis_2rmsf(rmsf0, rmsf1, title = ''):
+    print(f">>> Plotting RMSF for '{title}'...")
 
-    plt.figure()
+    frames = np.arange(rmsf0.size)
+    fig, ax = plt.subplots()
 
-    if rmsf1.size != rmsf2.size:
-        arrs = sorted([rmsf1, rmsf2], key=lambda arr:arr.size)
-        arrs[0] = np.append(arrs[0],arrs[0])
-        plt.plot(arrs[0])
+    ax.set_title(title, fontdict = dict(fontsize = 20))
+    ax.set_xlabel("CA atom", fontdict = dict(fontsize = 16))
+    ax.set_ylabel("RMSF", fontdict = dict(fontsize = 16))
+    ax.tick_params(labelsize = 12)
+
+    if rmsf0.size != rmsf1.size:
+        return
+
+        # arrs = sorted([rmsf0, rmsf1], key=lambda arr:arr.size)
+        # arrs[0] = np.append(arrs[0],arrs[0])
+        # plt.plot(arrs[0])
 
     else:
+        ax.plot(frames, rmsf0, color = BLUE, linestyle = ':', linewidth = 2)
+        ax.plot(frames, rmsf1, color = HALF_RED, linestyle = '-', linewidth = 2)
 
-        plt.plot(rmsf1)
-        plt.plot(rmsf2)
+        # ax.scatter(frames, rmsf0, color = BLUE, marker = '+', s = 12)
+        # ax.scatter(frames, rmsf1, color = HALF_RED, marker = 'x', s = 12)
 
-    plt.show()
 
 if __name__ == "__main__":
-    for run in RUNS:
-        PATH_RMSF = DIR_DA_GENERAL / f"{run}-rmsf.npy"
-        vis_rmsf(PATH_RMSF)
+    for run_preffix in RUN_PREFFIXES:
+        run0 = run_preffix + "_rep0"
+        run1 = run_preffix + "_rep1"
 
-# vis_2rmsf(rmsf_dir1,rmsf_dir2)
+        PATH_RMSF0 = DIR_DA_GENERAL / f"{run0}-rmsf.npy"
+        PATH_RMSF1 = DIR_DA_GENERAL / f"{run1}-rmsf.npy"
+
+        rmsf0 = np.load(PATH_RMSF0)
+        rmsf1 = np.load(PATH_RMSF1)
+
+        vis_2rmsf(rmsf0, rmsf1, title = run_preffix)
+
+    plt.show()
