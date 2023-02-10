@@ -210,8 +210,10 @@ class RMSD_1D_Clustering(RMSD_1D):
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 class RMSD_1D_Compare(RMSD_1D):
-    def __init__(self, rmsd_mat_0, rmsd_mat_1, title):
+    def __init__(self, rmsd_mat_0, rmsd_mat_1, title, label0, label1):
         self.rmsd_mat1 = rmsd_mat_1
+        self.label0 = label0
+        self.label1 = label1
         super().__init__(rmsd_mat_0, title)
 
     # --------------------------------------------------------------------------
@@ -220,8 +222,9 @@ class RMSD_1D_Compare(RMSD_1D):
         self.rmsd_arr1 = self.rmsd_mat1[ref_frame]
 
     def init_plot(self):
-        self.line_rmsd0 = self.ax.scatter(self.x, self.rmsd_arr, color = BLUE, marker = '+', s = 12)
-        self.line_rmsd1 = self.ax.scatter(self.x, self.rmsd_arr1, color = HALF_RED, marker = 'x', s = 12)
+        self.line_rmsd0 = self.ax.scatter(self.x, self.rmsd_arr, color = BLUE, marker = '+', s = 12, label = self.label0)
+        self.line_rmsd1 = self.ax.scatter(self.x, self.rmsd_arr1, color = HALF_RED, marker = 'x', s = 12, label = self.label1)
+        self.ax.legend()
 
     def update_line_rmsd(self):
         self.line_rmsd0.set_offsets(
@@ -256,7 +259,7 @@ if __name__ == "__main__":
 
         # rmsds.append(RMSD_2D(rmsd_mat0, title = run0))
         # rmsds.append(RMSD_2D(rmsd_mat1, title = run1))
-        rmsds.append(RMSD_1D_Compare(rmsd_mat0, rmsd_mat1, title = run_preffix))
+        rmsds.append(RMSD_1D_Compare(rmsd_mat0, rmsd_mat1, run_preffix, run0, run1))
 
 
     ############################################################################
