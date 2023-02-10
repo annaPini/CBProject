@@ -3,6 +3,9 @@ import matplotlib.pyplot as plt
 
 def vis_rmsf(rmsf_dir):
     rmsf = np.load(rmsf_dir)
+
+    plt.figure()
+
     plt.plot(rmsf)
     plt.xlabel("atoms")
     plt.ylabel("RMSF")
@@ -12,6 +15,8 @@ def vis_rmsf(rmsf_dir):
 def vis_2rmsf(rmsf_dir1,rmsf_dir2):
     rmsf1 = np.load(rmsf_dir1)
     rmsf2 = np.load(rmsf_dir2)
+
+    plt.figure()
 
     if rmsf1.size != rmsf2.size:
         arrs = sorted([rmsf1, rmsf2], key=lambda arr:arr.size)

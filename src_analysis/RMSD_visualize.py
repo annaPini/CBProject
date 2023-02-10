@@ -7,31 +7,42 @@ from matplotlib.pyplot import cm
 
 # //////////////////////////////////////////////////////////////////////////////
 class RMSDPlotter:
-    def __init__(self, rmsd_mat):
+    def __init__(self, rmsd_mat, title = ''):
         print(f">>> Loading RMSD data...")
         self.rmsd_mat = rmsd_mat
 
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 class RMSD_2D(RMSDPlotter):
-    def __init__(self, rmsd_mat):
-        super().__init__(rmsd_mat)
-        plt.colorbar(plt.imshow(self.rmsd_mat, vmax = 5))
+    def __init__(self, rmsd_mat, title = ''):
+        super().__init__(rmsd_mat, title = '')
+        self.fig, self.ax = plt.subplots()
+
+        self.ax.set_title(title)
+        self.ax.set_xlabel("Frame 0")
+        self.ax.set_ylabel("Frame 1")
+
+        self.fig.colorbar(
+            self.ax.imshow(self.rmsd_mat,
+            # vmax = 5, 
+            cmap = "Reds")
+        )
 
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 class RMSD_1D(RMSDPlotter):
     init_ref_frame = 0
 
-    def __init__(self, rmsd_mat):
-        super().__init__(rmsd_mat)
+    def __init__(self, rmsd_mat, title = ''):
+        super().__init__(rmsd_mat, title = '')
 
         self.x = np.arange(self.rmsd_mat.shape[0])
         self.colors = np.zeros((self.rmsd_mat.shape[0], 4))
 
         self.fig, self.ax = plt.subplots()
         self.fig.subplots_adjust(bottom = 0.25, top = 0.9)
-        # self.ax.set_facecolor((0, 0, 0))
+
+        self.ax.set_title(title)
         self.ax.set_xlabel("Frame")
         self.ax.set_ylabel("RMSD")
 
@@ -104,7 +115,7 @@ class RMSD_1D_WAD(RMSD_1D):
             ax = plt.axes((.15, .05, .5, .03)),
             label = "rmsd_treshold", color = "blue",
             valstep = .05, valinit = self.init_rmsd_treshold,
-            valmin = 0, valmax = np.max(self.rmsd_mat),
+            valmin = 0, valmax = np.max(self.rmsd_mat, title = ''),
         )
         self.slid_rmsd_treshold.on_changed(self.update_plot)
 
@@ -150,7 +161,7 @@ class RMSD_1D_Clustering(RMSD_1D):
 
         self.set_cluster_colors(self.init_clustering_t)
 
-        super().__init__(rmsd_mat)
+        super().__init__(rmsd_mat, title = '')
 
     # --------------------------------------------------------------------------
     def init_gui(self):
@@ -201,9 +212,9 @@ class RMSD_1D_Clustering(RMSD_1D):
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 class RMSD_1D_Compare(RMSD_1D):
-    def __init__(self, rmsd_mat_0, rmsd_mat_1):
+    def __init__(self, rmsd_mat_0, rmsd_mat_1, title):
         self.rmsd_mat1 = rmsd_mat_1
-        super().__init__(rmsd_mat_0)
+        super().__init__(rmsd_mat_0, title)
 
     # --------------------------------------------------------------------------
     def set_color(self, ref_frame):
@@ -211,19 +222,18 @@ class RMSD_1D_Compare(RMSD_1D):
         self.rmsd_arr1 = self.rmsd_mat1[ref_frame]
 
     def init_plot(self):
-        self.line_rmsd0 = self.ax.scatter(self.x, self.rmsd_arr, c = self.colors, marker = '+', s = 12)
-        self.line_rmsd1 = self.ax.scatter(self.x, self.rmsd_arr1, c = self.colors/2, marker = 'x', s = 12)
+        half_red = 1, 0, 0, 0.5
+        self.line_rmsd0 = self.ax.scatter(self.x, self.rmsd_arr, color = BLUE, marker = '+', s = 12)
+        self.line_rmsd1 = self.ax.scatter(self.x, self.rmsd_arr1, color = half_red, marker = 'x', s = 12)
 
     def update_line_rmsd(self):
         self.line_rmsd0.set_offsets(
             np.append(self.x, self.rmsd_arr).reshape((2, self.x.size)).T
         )
-        self.line_rmsd0.set_color(self.colors)
-
         self.line_rmsd1.set_offsets(
             np.append(self.x, self.rmsd_arr1).reshape((2, self.x.size)).T
         )
-        self.line_rmsd1.set_color(self.colors/2)
+
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -241,47 +251,41 @@ if __name__ == "__main__":
 
     ############################################################################
 
-    # for run in ["mt1_rep0"]:
-    # # for run in ["mt1_rep0", "wt1_rep1"]:
-    # # for run in ["wt1_rep0", "mt1_rep1"]:
-    # # for run in RUNS[1:2]:
-    #     PATH_RMSD = DIR_DA_GENERAL / f"{run}-rmsd.npy"
-    #     PATH_LINK = DIR_DA_GENERAL / f"{run}-link.npy"
-    #
-    #
-    #     rmsd_mat = np.load(PATH_RMSD)
-    #     Z = np.load(PATH_LINK)
-    #
-    #     # print(cluster_mat)
-    #     # print(cluster_mat.shape)
-    #
-    #     ##### Add the instances to this list to avoid garbage collection messing up with the plots' sliders
-    #     # rmsds.append(RMSD_2D(rmsd_mat))
-    #     # rmsds.append(RMSD_1D(rmsd_mat))
-    #     # rmsds.append(RMSD_1D_WAD(rmsd_mat))
-    #     rmsds.append(RMSD_1D_Clustering(rmsd_mat, Z, COLOR_MAP))
+    for run_preffix in RUN_PREFFIXES:
+        run0 = run_preffix + "_rep0"
+        run1 = run_preffix + "_rep1"
+
+        PATH_RMSD0 = DIR_DA_GENERAL / f"{run0}-rmsd.npy"
+        PATH_RMSD1 = DIR_DA_GENERAL / f"{run1}-rmsd.npy"
+        rmsd_mat0 = np.load(PATH_RMSD0)
+        rmsd_mat1 = np.load(PATH_RMSD1)
+
+        # rmsds.append(RMSD_1D_Compare(rmsd_mat0, rmsd_mat1, title = run_preffix))
+        rmsds.append(RMSD_2D(rmsd_mat0, title = run0))
+        rmsds.append(RMSD_2D(rmsd_mat1, title = run1))
+
 
     ############################################################################
 
-    run0 = "mt1_rep0"
-    run1 = "mt1_rep1"
-
-    PATH_RMSD0 = DIR_DA_GENERAL / f"{run0}-rmsd.npy"
-    PATH_RMSD1 = DIR_DA_GENERAL / f"{run1}-rmsd.npy"
-
-    PATH_LINK = DIR_DA_GENERAL / f"{run0}-link.npy"
-    Z = np.load(PATH_LINK)
-
-
-    rmsd_mat0 = np.load(PATH_RMSD0)
-    rmsd_mat1 = np.load(PATH_RMSD1)
-
-    # rmsds.append(RMSD_2D(rmsd_mat0))
-    # rmsds.append(RMSD_1D(rmsd_mat0))
-    # rmsds.append(RMSD_1D_WAD(rmsd_mat0))
-    rmsds.append(RMSD_1D_Clustering(rmsd_mat0, Z, COLOR_MAP))
+    # run0 = "mt2_rep0"
+    # run1 = "mt1_rep1"
+    #
+    # PATH_RMSD0 = DIR_DA_GENERAL / f"{run0}-rmsd.npy"
+    # PATH_RMSD1 = DIR_DA_GENERAL / f"{run1}-rmsd.npy"
+    #
+    # PATH_LINK = DIR_DA_GENERAL / f"{run0}-link.npy"
+    # Z = np.load(PATH_LINK)
+    #
+    #
+    # rmsd_mat0 = np.load(PATH_RMSD0)
+    # rmsd_mat1 = np.load(PATH_RMSD1)
+    #
+    # # rmsds.append(RMSD_2D(rmsd_mat0))
+    # # rmsds.append(RMSD_1D(rmsd_mat0))
+    # # rmsds.append(RMSD_1D_WAD(rmsd_mat0))
+    # # rmsds.append(RMSD_1D_Clustering(rmsd_mat0, Z, COLOR_MAP))
     # rmsds.append(RMSD_1D_Compare(rmsd_mat0, rmsd_mat1))
-
+    #
 
     ############################################################################
 

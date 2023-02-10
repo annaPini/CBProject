@@ -8,6 +8,7 @@ from pathlib import Path
 
 ##### General
 DIR_PROJECT = Path(os.getcwd()).parent
+RUN_PREFFIXES = ["mt1", "mt2", "wt1", "wt2"]
 RUNS = ["mt1_rep0", "mt1_rep1", "mt2_rep0", "mt2_rep1", "wt1_rep0", "wt1_rep1", "wt2_rep0", "wt2_rep1"]
 CURRENT_RUN = "mt2_rep0"
 
@@ -28,6 +29,7 @@ DIR_DA_PYINTERAPH = DIR_DA / "pyinteraph"
 DIR_DA_SPECIFIC = DIR_DA / "specific"
 DIR_DA_VMD = DIR_DA / "vmd"
 DIR_DA_WAD = DIR_DA / "WAD"
+DIR_DA_SASA = DIR_DA / "sasa"
 
 ####################################### CONSTANTS
 
