@@ -22,6 +22,7 @@ WAD_DENSITY_TRESHOLD_UPPER = 3
 
 DIR_DMD = DIR_PROJECT / "data_md"
 DIR_DA = DIR_PROJECT / "data_analysis"
+DIR_DEXTRA = DIR_PROJECT / "data_extra"
 
 DIR_DA_TRAJECTORIES = DIR_DA / "trajectories"
 DIR_DA_GENERAL = DIR_DA / "general"
@@ -70,41 +71,3 @@ class Info:
         print(f"--- Updated '{self.path.name}' with {len(data)} parameters.")
 
 # //////////////////////////////////////////////////////////////////////////////
-"""
-    =====================
-    NOTES AND EXTRA STUFF
-    =====================
-    sasa --> "solvent accesible surface area"
-    vmd --> extensions --> volmap tool
-
-    8f - 7f
-    8h - 7h
-    8f - 8h*2
-    7f - 7h*2
-
-    source pyinteraph_venv/bin/activate
-    cd /media/sf_CulebraBox/NDProjects/temp_project/8DFN_full/pyinteraph
-    pyinteraph -s md_plain.tpr -t md-rottrans.xtc -r md.gro --sb-co 5 -b --sb-graph sb-graph.dat --ff-masses charmm27 -v --sb-cg-file charged_groups.ini
-
-    ++++++++++++++++++++++++++++++++++++++
-    wt = 7SI9
-    mt = 8DFN
-
-    ACTIVE SITE: 41, 145
-    MUTATION: 164 (wt = H, mt = N)
-
-    ++++++++++++++++++++++++++++++++++++++
-    mt1
-    mt2
-    wt1
-    wt2
-
-    mt1_rep0
-    mt1_rep1
-    mt2_rep0
-    mt2_rep1
-    wt1_rep0
-    wt1_rep1
-    wt2_rep0
-    wt2_rep1
-"""
