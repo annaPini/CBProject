@@ -1,64 +1,50 @@
 from parameters import *
 from calculate_general import calc_cmap
 import matplotlib.pyplot as plt
-import MDAnalysis as mda
+
+# //////////////////////////////////////////////////////////////////////////////
+def vis_cmap(cmap, title = '', color_method = "Reds"):
+    fig, ax = plt.subplots()
+    fig.subplots_adjust(bottom = 0.1, top = 0.9, left = 0.15, right = 0.95)
+
+    ax.set_title(title, fontdict = dict(fontsize = 20))
+    ax.set_xlabel("Atom A", fontdict = dict(fontsize = 16))
+    ax.set_ylabel("Atom B", fontdict = dict(fontsize = 16))
+
+    colorbar = fig.colorbar( plt.imshow(-cmap, cmap = color_method) )
+
+    ax.tick_params(labelsize = 12)
+    colorbar.ax.tick_params(labelsize = 12)
+
+# ------------------------------------------------------------------------------
+def diff_cmap(cmap1, cmap2, title = ''):
+    vis_cmap(abs(cmap2 - cmap1), title, color_method = "Blues")
 
 
-def vis_cmap(cmap,run):
-    plt.figure(figsize=((10,10)))
-    plt.title(run)
-    img = plt.imshow(-cmap, cmap = "hot")
-    # img = plt.imshow(-cmap, cmap = "Reds", vmin = -cmap.max(), vmax = 0)
-    plt.colorbar(img)
 
-
-def diff_cmap(cmap1, cmap2, run):
-    diff = abs(cmap2 - cmap1)
-
-    plt.figure(figsize=((10,10)))
-    plt.title(run)
-    # img = plt.imshow(-cmap, cmap = "Reds", vmin = -cmap.max(), vmax = 0)
-    img = plt.imshow(-diff, cmap = "hot")
-    plt.colorbar(img)
-
-
+# //////////////////////////////////////////////////////////////////////////////
 if __name__ == "__main__":
-    for run in ["mt1_rep0", "mt2_rep0"]:
-    # for run in RUNS[2:3]:
-        PATH_COORDS = DIR_DA_TRAJECTORIES / f"{run}-coords.npy"
-        PATH_CMAP1 = DIR_DA_GENERAL / f"{run}-cmap1.npy"
-        PATH_CMAP2 = DIR_DA_GENERAL / f"{run}-cmap2.npy"
 
-        f1 = 100
-        f2 = 5000
+    run0 = "mt1_rep0"
+    run1 = "mt2_rep0"
+    frame0 = 0
+    frame1 = 0
 
+    PATH_COORDS0 = DIR_DA_TRAJECTORIES / f"{run0}-coords.npy"
+    PATH_COORDS1 = DIR_DA_TRAJECTORIES / f"{run1}-coords.npy"
 
-        coords = np.load(PATH_COORDS)
-        cmap1 = calc_cmap(coords, PATH_CMAP1, frame = f1)
-        cmap2 = calc_cmap(coords, PATH_CMAP2, frame = f2)
+    coords0 = np.load(PATH_COORDS0)
+    coords1 = np.load(PATH_COORDS1)
 
+    cmap1 = calc_cmap(coords0[frame0])
+    cmap2 = calc_cmap(coords1[frame1])
 
-        # PATH_GRO     = DIR_DA_TRAJECTORIES / f"{run}.gro"
-        # PATH_XTC     = DIR_DA_TRAJECTORIES / f"{run}.xtc"
-        # traj = mda.Universe(str(PATH_GRO), str(PATH_XTC))
-        #
-        # traj.trajectory[f1]
-        # coords1 = traj.select_atoms("name CA").positions
-        #
-        # traj.trajectory[f2]
-        # coords2 = traj.select_atoms("name CA").positions
+    vis_cmap(cmap1, f"{run0}-frame_{frame0}")
+    vis_cmap(cmap2, f"{run1}-frame_{frame1}")
+    # diff_cmap(cmap1, cmap2, f"{run0} frame {frame0} vs {run1} frame {frame1}")
 
-        # calc_cmap(coords1, PATH_CMAP1)#, frame = 100)
-        # calc_cmap(coords2, PATH_CMAP2)#, frame = 5000)
-
-        vis_cmap(cmap1, run)
-        # vis_cmap(cmap2, run)
-
-        # diff_cmap(cmap1, cmap2, "DIFF")
-
-
-        # compare 2 cmaps
-        #compare_cmap(GRO, XTC, 3, 5, CMAP_OUT1, CMAP_OUT2)
-        #vis_cmap(CMAP_OUT1, run)
-        #vis_cmap(CMAP_OUT2, run)
     plt.show()
+
+
+
+# //////////////////////////////////////////////////////////////////////////////

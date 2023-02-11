@@ -30,6 +30,8 @@ def vis_2rmsf(rmsf0, rmsf1, title = '', label0 = '', label1 = ''):
 
 # //////////////////////////////////////////////////////////////////////////////
 if __name__ == "__main__":
+
+    # --------------------------------------------------------------------------
     for run_preffix in RUN_PREFFIXES:
         run0 = run_preffix + "_rep0"
         run1 = run_preffix + "_rep1"
@@ -37,11 +39,9 @@ if __name__ == "__main__":
         PATH_RMSF0 = DIR_DA_GENERAL / f"{run0}-rmsf.npy"
         PATH_RMSF1 = DIR_DA_GENERAL / f"{run1}-rmsf.npy"
 
-        rmsf0 = np.load(PATH_RMSF0)
-        rmsf1 = np.load(PATH_RMSF1)
+        vis_2rmsf(np.load(PATH_RMSF0), np.load(PATH_RMSF1), run_preffix, run0, run1)
 
-        vis_2rmsf(rmsf0, rmsf1, run_preffix, run0, run1)
-
+    # --------------------------------------------------------------------------
     comparisons = [
         ("mt2_rep0", "wt2_rep0"),
         ("mt1_rep0", "mt2_rep0"),
@@ -52,10 +52,7 @@ if __name__ == "__main__":
         PATH_RMSF0 = DIR_DA_GENERAL / f"{run0}-rmsf.npy"
         PATH_RMSF1 = DIR_DA_GENERAL / f"{run1}-rmsf.npy"
 
-        rmsf0 = np.load(PATH_RMSF0)
-        rmsf1 = np.load(PATH_RMSF1)
-
-        vis_2rmsf(rmsf0, rmsf1, f"{run0} vs {run1}", run0, run1)
+        vis_2rmsf(np.load(PATH_RMSF0), np.load(PATH_RMSF1), f"{run0} vs {run1}", run0, run1)
 
     plt.show()
 

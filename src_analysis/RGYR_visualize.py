@@ -27,10 +27,7 @@ if __name__ == "__main__":
         PATH_RGYR0 = DIR_DA_GENERAL / f"{run0}-rgyr.npy"
         PATH_RGYR1 = DIR_DA_GENERAL / f"{run1}-rgyr.npy"
 
-        rgyr0 = np.load(PATH_RGYR0)
-        rgyr1 = np.load(PATH_RGYR1)
-
-        vis_2rgyr(rgyr0, rgyr1, run_preffix, run0, run1)
+        vis_2rgyr(np.load(PATH_RGYR0), np.load(PATH_RGYR1), run_preffix, run0, run1)
 
     plt.show()
 
