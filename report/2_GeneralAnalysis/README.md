@@ -49,7 +49,7 @@ In $rep0$ only a change in the configuration occur around frame 5500. In $rep1$ 
 ![label](RMSD2D-wt1.jpg)
 Here we observe two deeply different behaviour in the RMSD. In $rep0$ the values are substantially constant and it seems that no important changes in the configuration occur. In $rep1$ a clear change in the configuration occurs around frame 4000. 
 ![label](RMSD2D-wt2.jpg)
-
+The RMSD values in both repetitions seems to be similar. In $rep1$ a change in conformation seems to occur around frame 3000. 
 ## RMSF
 The protein is composed of many atoms which move during the evolution of the system. To understand which parts of the protein are more mobile it is useful to calculate the root mean square fluctuations for each atom. 
 The RMSF related to atom $i$ is defined as:
@@ -58,17 +58,12 @@ where $<\Delta \vec{r_{i}}>$ is the mean deviation of the atom from its equilibr
 
 In the graphs below it can be seen that some atoms have a larger RMSF, meaning that they are more mobile during the evolution of the protein.
 ![label](RMSF-mt1.png)
+The RMSF values for $rep0$ are in general larger than the values calculated for $rep1$. This means that the atoms oscillate more around their equilibrium position in $rep0$ than in $rep1$. 
+The RMSF graphs are compatible with the RMSD ones. As regards $rep0$, we can observe non constant regions, which could correspond to changes in the conformation of the protein. In these regions, the atoms are expected to move more, than we expect an higher value of the RMSF. On the other hand, the RMSD values calculated for $rep1$ seem to oscillate around a constant value. This means that probably conformational changes do not occur, then the atoms are expected to slightly move around their equilibrium position.
+
 ![label](RMSF-mt1_rep0-mt2_rep0.png)
-
-RMSF_COMPARE:
-- mt2_rep0 & mt2_rep1
-- wt1_rep0 & wt1_rep1
-- wt2_rep0 & wt2_rep1
-
-RMSF_COMPARE:
-- mt2_rep0 & wt2_rep0
-- wt1_rep0 & wt2_rep0
-
+Here we present the RMSF of the whole protein with the one computed for only a subunit. In this way we can explore how the fluctuations of atoms in a given subunit are correlated to the fluctuations in the other subunit.
+We observe that for the protein with two subunitns the RMSF is lower than the one calculate for one subunit alone. This means that the system with two subunits is more stable than the system with only one subunit. 
 ## Radius of Gyration
 From VMD it can be observed that even though the protein fluctuates, its shape remains constant. To check if the protein elongates during its evolution it is useful to calculate the radius of gyration:
 $$ RGYR(\Delta t) = \sqrt{\frac{\sum_{i=1}^{N}m_{i}(r_{i}(\Delta t)-R_{cm})^{2}}{\sum_{i=1}^{N} m_{i}}}$$
@@ -77,16 +72,20 @@ where
 - $r_{i}$ is the position of atom $i$ at time $\Delta t$ 
 - $R_{cm}$ is the center of mass
 
+In the following graphs we present the radii of gyration for the four system. The noise is large, then few assuptions can be done as regard the compatibility between the two sets of data and the configurational changes of the protein. The RMSF computed for $rep0$ amd $rep1$ seem to agree more for $mt2$ and $wt2$, then for the evolution for the whole protein. This could mean that a single subunit is less stable than two subunits linked togheter. 
 ![label](RGYR-mt1.png)
+The radius of gyration, RGYR, for $rep0$ presents a peack aroung frame 900, and two local maxima around frame 2000 and frame 4000. A non constant RGYR could mean that the protein is changing shape, then it is compatible with a change of the configuration. The RGYR for $rep1$ oscillates around $220nm$ and it slightly increases between frame 1000 and frame 3800. In this interval it is possible that occurs a conformational change.
 ![label](RGYR-mt2.png)
+The values of the RGYR are extremly noisy, then it is quite difficult to understand if a change of conformation occurs. In $rep1$ a peack is observed around frame 4800, and in $rep0$ the same peack occurs around frame 5500. We think that the protein assumes the similar configurations around frame 4800 and 5500.
 ![label](RGYR-wt1.png)
+The values of the RGYR quite agree approximately until frame 1800 and starting from frame 5500 to the end. Starting from frame 2000 the RGYR of $rep1$ increases and reaches a peack around frame 4000. 
 ![label](RGYR-wt2.png)
+The RGYR of the two repetitions quite agree, it seems they both evolve with a sinusoidal trend. 
 
 ## Contact Map
 The protein is constituted by a folded chain composed of atoms linked together. Non subsequent atoms can be near enough to interact even if they are not adjacent. The contact maps shows the links between atoms only for a single frame, and a more detailed analysis of interactions in the protein is performed in the following part of this work.
 The contact map is defined in 2D, then it is not possible to overlap the graphs as we did for RMSF, RMSD and RGYR.
-Here we show as an example some contact maps calculated at the initial frame of the trajectory. The initial frame is the same for the two trajectories, namely rep0 and rep1, then the contact map results to be the same.
+Here we show as an example a contact maps calculated at the initial frame of the trajectory. The initial frame is the same for the two trajectories, namely rep0 and rep1, then the contact map results to be the same.
 
-
-CMAP_COMPARE:
-- mt1_rep0 & mt2_rep0
+![label](CMAP-mt1mt2.jpg)
+The most dark parts represent the regions in which there is more contact between the residues, while the brightest parts correspond to the regions in which there is less contact. In the contact map on the right a discontinuos line in the indicates the region in which the first subunit ends and the secon one begins. It can be observed that the map is symmetric, and for the whole protein the pattern is repeated two times along the main diagonal.
