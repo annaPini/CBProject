@@ -39,7 +39,7 @@ def mol_commands(*commands):
 
 
 
-# ------------------------------------------------------------------------------
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 @vmd_writer
 def gen_vmd_basic():
     return "\n\n".join((
@@ -49,18 +49,7 @@ def gen_vmd_basic():
     ))
 
 
-# @vmd_writer
-# def gen_vmd_focus_active_site():
-#     return "\n\n".join((
-#         mol_commands("representation NewCartoon 0.300000 10.000000 4.100000 0", "color ColorID 6", "selection {protein}", "material BlownGlass", "addrep top", "smoothrep top 0 4"),
-#         mol_commands("representation NewCartoon 0.300000 10.000000 4.100000 0", "color ColorID 1", "selection {resid 163 164 165}", "material Opaque", "addrep top", "smoothrep top 1 4"),
-#         mol_commands("representation NewCartoon 0.300000 10.000000 4.100000 0", "color ColorID 7", "selection {resid 40 41 42 144 145 146}", "material Opaque", "addrep top", "smoothrep top 2 4"),
-#         mol_commands("representation Licorice 0.300000 12.000000 12.000000", "color Name", "selection {resid 41 145 164}", "material Opaque", "addrep top", "smoothrep top 3 4"),
-#         mol_commands("representation VDW 1.000000 12.000000", "color Name", "selection {resid 41 145 164}", "material Glass3", "addrep top", "smoothrep top 4 4"),
-#         "set viewpoints([molinfo top]) {{{1 0 0 -72.9} {0 1 0 -54.06} {0 0 1 -50.94} {0 0 0 1}} {{0.380485 -0.721862 0.577897 0} {-0.74395 -0.610101 -0.272297 0} {0.549197 -0.326324 -0.769205 0} {0 0 0 1}} {{0.156988 0 0 0} {0 0.156988 0 0} {0 0 0.156988 0} {0 0 0 1}} {{1 0 0 0.152241} {0 1 0 -0.82334} {0 0 1 -0.311366} {0 0 0 1}}}",
-#     ))
-
-
+# ------------------------------------------------------------------------------
 @vmd_writer
 def gen_vmd_focus_active_site():
     return "\n\n".join((
@@ -73,7 +62,7 @@ def gen_vmd_focus_active_site():
         "set viewpoints([molinfo top]) {{{1 0 0 -72.9} {0 1 0 -54.06} {0 0 1 -50.94} {0 0 0 1}} {{-0.864712 -0.499059 0.0551708 0} {-0.397742 0.61376 -0.681844 0} {0.306443 -0.611571 -0.729263 0} {0 0 0 1}} {{0.188235 0 0 0} {0 0.188235 0 0} {0 0 0.188235 0} {0 0 0 1}} {{1 0 0 0.152241} {0 1 0 -0.82334} {0 0 1 -0.311366} {0 0 0 1}}}",
     ))
 
-
+# ------------------------------------------------------------------------------
 @vmd_writer
 def gen_vmd_focus_opening():
     return "\n\n".join((

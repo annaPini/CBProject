@@ -46,6 +46,7 @@ if __name__ == "__main__":
         ("mt2_rep0", "wt2_rep0"),
         ("mt1_rep0", "mt2_rep0"),
         ("wt1_rep0", "wt2_rep0"),
+        ("mt2_rep0", "wt1_rep0"),
     ]
 
     for run0, run1 in comparisons:

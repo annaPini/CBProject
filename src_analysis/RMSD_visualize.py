@@ -20,8 +20,8 @@ class RMSD_2D(RMSDPlotter):
         super().__init__(rmsd_mat, title)
 
         self.fig.subplots_adjust(bottom = 0.1, top = 0.9, left = 0.15, right = 0.95)
-        self.ax.set_xlabel("Frame A", fontdict = dict(fontsize = 16))
-        self.ax.set_ylabel("Frame B", fontdict = dict(fontsize = 16))
+        self.ax.set_xlabel("Frame", fontdict = dict(fontsize = 16))
+        self.ax.set_ylabel("Frame", fontdict = dict(fontsize = 16))
 
         colorbar = self.fig.colorbar( self.ax.imshow(self.rmsd_mat, cmap = "Reds") )
 
@@ -153,8 +153,6 @@ class RMSD_1D_Clustering(RMSD_1D):
     def __init__(self, rmsd_mat, Z, color_map):
         self.Z = Z
         self.color_map = color_map
-
-        # np.random.seed(0)
         self.highlight_cluster = False
 
         self.set_cluster_colors(self.init_clustering_t)
@@ -193,7 +191,6 @@ class RMSD_1D_Clustering(RMSD_1D):
         self.cluster_mat = calc_cluster(self.Z, t, label_criterion = self.label_criterion)
         self.n_clusters = np.max(self.cluster_mat)
         self.cluster_colors = cm.__dict__[self.color_map](np.linspace(0, 1, self.n_clusters))
-        # np.random.shuffle(self.cluster_colors)
 
 
     # --------------------------------------------------------------------------
