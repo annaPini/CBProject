@@ -38,7 +38,6 @@ def mol_commands(*commands):
     return '\n'.join(("mol " + command for command in commands))
 
 
-
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 @vmd_writer
 def gen_vmd_basic():
@@ -51,7 +50,62 @@ def gen_vmd_basic():
 
 # ------------------------------------------------------------------------------
 @vmd_writer
-def gen_vmd_focus_active_site():
+def gen_vmd_focus_opening():
+    return "\n\n".join((
+        mol_commands("representation NewCartoon 0.300000 10.000000 4.100000 0", "color ColorID 11", "selection {residue <= 306}", "material Opaque", "addrep top", "smoothrep top 0 4"),
+        mol_commands("representation NewCartoon 0.300000 10.000000 4.100000 0", "color ColorID 12", "selection {residue > 306}", "material Opaque", "addrep top", "smoothrep top 1 4"),
+        "set viewpoints([molinfo top]) {{{1 0 0 -72.9} {0 1 0 -54.06} {0 0 1 -50.94} {0 0 0 1}} {{0.080682 -0.0753226 -0.993764 0} {0.406577 0.912779 -0.0361878 0} {0.909954 -0.401147 0.104286 0} {0 0 0 1}} {{0.0434286 0 0 0} {0 0.0434286 0 0} {0 0 0.0434286 0} {0 0 0 1}} {{1 0 0 -0.397759} {0 1 0 0.29666} {0 0 1 -0.311366} {0 0 0 1}}}",
+    ))
+
+
+# ------------------------------------------------------------------------------
+@vmd_writer
+def gen_vmd_active_site_partA():
+    return "\n\n".join((
+        mol_commands("representation NewRibbons 0.300000 12.000000 3.000000 0", "color ColorID 2", "selection {protein and not resid 41 145 164}", "material Opaque", "addrep top", "smoothrep top 0 4"),
+        mol_commands("representation VDW 1.000000 12.000000", "color ColorID 3", "selection {resid 41 145 164}", "material Opaque", "addrep top", "smoothrep top 1 4"),
+        mol_commands("representation NewCartoon 0.350000 10.000000 4.100000 0", "color ColorID 1", "selection {protein and residue >= 45 and residue <= 50}", "material Opaque", "addrep top", "smoothrep top 2 4"),
+        mol_commands("representation NewCartoon 0.350000 10.000000 4.100000 0", "color ColorID 4", "selection {protein and residue >= 289 and residue <= 312}", "material Opaque", "addrep top", "smoothrep top 3 4"),
+        mol_commands("representation NewCartoon 0.350000 10.000000 4.100000 0", "color ColorID 7", "selection {protein and residue >= 350 and residue <= 356}", "material Opaque", "addrep top", "smoothrep top 4 4"),
+        mol_commands("representation NewCartoon 0.350000 10.000000 4.100000 0", "color ColorID 0", "selection {protein and residue >= 593}", "material Opaque", "addrep top", "smoothrep top 5 4"),
+        mol_commands("representation VDW 1.000000 12.000000", "color ColorID 11", "selection {protein and resid 46 141 142 166 168 189 190 191}", "material Opaque", "addrep top", "smoothrep top 6 4"),
+        # "set viewpoints([molinfo top]) {{{1 0 0 -31.78} {0 1 0 -62.26} {0 0 1 -58.4} {0 0 0 1}} {{-0.978861 0.128845 0.157474 0} {-0.0245963 -0.84299 0.536993 0} {0.202034 0.521888 0.828481 0} {0 0 0 1}} {{0.143188 0 0 0} {0 0.143188 0 0} {0 0 0.143188 0} {0 0 0 1}} {{1 0 0 1.49572} {0 1 0 0.210997} {0 0 1 -7.51354} {0 0 0 1}}}",
+    ))
+
+@vmd_writer
+def gen_vmd_active_site_partB():
+    return "\n\n".join((
+        mol_commands("representation NewCartoon 0.350000 10.000000 4.100000 0", "color ResType", "selection {protein and not resid 41 145 164}", "material Opaque", "addrep top", "smoothrep top 0 4"),
+        mol_commands("representation VDW 1.200000 12.000000", "color ColorID 1", "selection {resid 164}", "material BlownGlass", "addrep top", "smoothrep top 1 4"),
+        mol_commands("representation VDW 1.000000 12.000000", "color Name", "selection {resid 41 145 164}", "material Opaque", "addrep top", "smoothrep top 2 4"),
+        mol_commands("representation QuickSurf 1.000000 0.500000 1.000000 1.000000", "color ResType", "selection {protein and not resid 41 145 164}", "material Translucent", "addrep top", "smoothrep top 3 4"),
+        "set viewpoints([molinfo top]) {{{1 0 0 -31.78} {0 1 0 -62.26} {0 0 1 -58.4} {0 0 0 1}} {{0.857552 0.506672 0.0874095 0} {-0.508402 0.810321 0.290797 0} {0.0765338 -0.293879 0.952621 0} {0 0 0 1}} {{0.301463 0 0 0} {0 0.301463 0 0} {0 0 0.301463 0} {0 0 0 1}} {{1 0 0 1.49572} {0 1 0 0.210997} {0 0 1 -7.51354} {0 0 0 1}}}",
+    ))
+
+@vmd_writer
+def gen_vmd_active_site_partC():
+    return "\n\n".join((
+        mol_commands("representation NewRibbons 0.300000 12.000000 3.000000 0", "color ResType", "selection {protein and not resid 41 145 164}", "material Opaque", "addrep top", "smoothrep top 0 4"),
+        mol_commands("representation Solvent 0.000000 7.000000 1.000000", "color Name", "selection {resid 164}", "material HardPlastic", "addrep top", "smoothrep top 1 4"),
+        mol_commands("representation VDW 1.000000 12.000000", "color Name", "selection {resid 41 145 164}", "material Opaque", "addrep top", "smoothrep top 2 4"),
+        mol_commands("representation QuickSurf 1.000000 0.500000 1.000000 1.000000", "color ResType", "selection {protein and not resid 41 145 164}", "material Translucent", "addrep top", "smoothrep top 3 4"),
+        mol_commands("representation Licorice 0.100000 10.000000 12.000000", "color ResType", "selection {protein and not resid 41 145 164 and not name "H.*"}", "material Opaque", "addrep top", "smoothrep top 4 4"),
+        "set viewpoints([molinfo top]) {{{1 0 0 -31.78} {0 1 0 -62.26} {0 0 1 -58.4} {0 0 0 1}} {{-0.409861 0.625519 -0.663645 0} {0.638651 0.716271 0.280699 0} {0.651032 -0.308799 -0.693131 0} {0 0 0 1}} {{0.100637 0 0 0} {0 0.100637 0 0} {0 0 0.100637 0} {0 0 0 1}} {{1 0 0 -1.57428} {0 1 0 -0.189003} {0 0 1 -7.51354} {0 0 0 1}}}",
+    ))
+
+@vmd_writer
+def gen_vmd_active_site_partD():
+    return "\n\n".join((
+        mol_commands("representation NewRibbons 0.300000 12.000000 3.000000 0", "color ColorID 2", "selection {protein and not resid 41 145 164}", "material Opaque", "addrep top", "smoothrep top 0 4"),
+        mol_commands("representation Solvent 0.000000 7.000000 1.000000", "color Name", "selection {resid 164}", "material HardPlastic", "addrep top", "smoothrep top 1 4"),
+        mol_commands("representation VDW 1.000000 12.000000", "color Name", "selection {resid 41 145 164}", "material Opaque", "addrep top", "smoothrep top 2 4"),
+        mol_commands("representation Licorice 0.100000 10.000000 12.000000", "color ColorID 4", "selection {protein and residue >= 351 and residue <= 354}", "material Opaque", "addrep top", "smoothrep top 3 4"),
+        mol_commands("representation Licorice 0.100000 10.000000 12.000000", "color ColorID 7", "selection {protein and residue >= 44 and residue <= 49}", "material Opaque", "addrep top", "smoothrep top 4 4"),
+        "set viewpoints([molinfo top]) {{{1 0 0 -82.24} {0 1 0 -62.53} {0 0 1 -48.76} {0 0 0 1}} {{0.992346 -0.11533 -0.039743 0} {-0.121277 -0.895911 -0.426928 0} {0.0136348 0.428582 -0.903181 0} {0 0 0 1}} {{0.172446 0 0 0} {0 0.172446 0 0} {0 0 0.172446 0} {0 0 0 1}} {{1 0 0 1.59624} {0 1 0 -1.76332} {0 0 1 -4.99905} {0 0 0 1}}}",
+    ))
+
+@vmd_writer
+def gen_vmd_active_site_partE():
     return "\n\n".join((
         mol_commands("representation Ribbons 0.300000 12.000000 2.000000", "color ColorID 6", "selection {protein}", "material BlownGlass", "addrep top", "smoothrep top 0 4"),
         mol_commands("representation Ribbons 0.300000 12.000000 2.000000", "color ColorID 1", "selection {resid 163 164 165}", "material Opaque", "addrep top", "smoothrep top 1 4"),
@@ -62,22 +116,12 @@ def gen_vmd_focus_active_site():
         "set viewpoints([molinfo top]) {{{1 0 0 -72.9} {0 1 0 -54.06} {0 0 1 -50.94} {0 0 0 1}} {{-0.864712 -0.499059 0.0551708 0} {-0.397742 0.61376 -0.681844 0} {0.306443 -0.611571 -0.729263 0} {0 0 0 1}} {{0.188235 0 0 0} {0 0.188235 0 0} {0 0 0.188235 0} {0 0 0 1}} {{1 0 0 0.152241} {0 1 0 -0.82334} {0 0 1 -0.311366} {0 0 0 1}}}",
     ))
 
-# ------------------------------------------------------------------------------
-@vmd_writer
-def gen_vmd_focus_opening():
-    return "\n\n".join((
-        mol_commands("representation NewCartoon 0.300000 10.000000 4.100000 0", "color ColorID 11", "selection {residue <= 306}", "material Opaque", "addrep top", "smoothrep top 0 4"),
-        mol_commands("representation NewCartoon 0.300000 10.000000 4.100000 0", "color ColorID 12", "selection {residue > 306}", "material Opaque", "addrep top", "smoothrep top 1 4"),
-        "set viewpoints([molinfo top]) {{{1 0 0 -72.9} {0 1 0 -54.06} {0 0 1 -50.94} {0 0 0 1}} {{0.080682 -0.0753226 -0.993764 0} {0.406577 0.912779 -0.0361878 0} {0.909954 -0.401147 0.104286 0} {0 0 0 1}} {{0.0434286 0 0 0} {0 0.0434286 0 0} {0 0 0.0434286 0} {0 0 0 1}} {{1 0 0 -0.397759} {0 1 0 0.29666} {0 0 1 -0.311366} {0 0 0 1}}}",
-    ))
-
-
 
 
 # //////////////////////////////////////////////////////////////////////////////
 if __name__ == "__main__":
 
-    ############### Progress of the MD post-processing workflow
+    ################################ Progress of the MD post-processing workflow
     GRO_MT2R0   = DIR_DA_TRAJECTORIES / "mt2_rep0.gro"
     XTC_MT2R0_A = DIR_DEXTRA / "md_plain.xtc"
     XTC_MT2R0_B = DIR_DEXTRA / "md-nojump.xtc"
@@ -98,15 +142,23 @@ if __name__ == "__main__":
     # gen_vmd_basic("postproc_2", GRO_MT2R0, XTC_MT2R0_C, pbc = True)
     # gen_vmd_basic("postproc_3", GRO_MT2R0, XTC_MT2R0  , pbc = True)
 
-    # gen_vmd_focus_active_site("focus_AS_mtr0", GRO_MT2R0, XTC_MT2R0, f1 = -1)
-    # gen_vmd_focus_active_site("focus_AS_mtr1", GRO_MT2R1, XTC_MT2R1, f1 = -1)
-    # gen_vmd_focus_active_site("focus_AS_wtr0", GRO_WT2R0, XTC_WT2R0, f1 = -1)
-    # gen_vmd_focus_active_site("focus_AS_wtr1", GRO_WT2R1, XTC_WT2R1, f1 = -1)
+    ################################
+    # gen_vmd_focus_opening("focus_open_mtr0", GRO_MT2R0, XTC_MT2R0, f0 = 5000, f1 = 6000)
+    # gen_vmd_focus_opening("focus_open_mtr1", GRO_MT2R1, XTC_MT2R1, f0 = 4000, f1 = 5000)
+    # gen_vmd_focus_opening("focus_open_wtr0", GRO_WT2R0, XTC_WT2R0, f0 = 5000, f1 = 6000)
+    # gen_vmd_focus_opening("focus_open_wtr1", GRO_WT2R1, XTC_WT2R1, f0 = 5000, f1 = 6000)
 
-    gen_vmd_focus_opening("focus_open_mtr0", GRO_MT2R0, XTC_MT2R0, f0 = 5000, f1 = 6000)
-    gen_vmd_focus_opening("focus_open_mtr1", GRO_MT2R1, XTC_MT2R1, f0 = 4000, f1 = 5000)
-    gen_vmd_focus_opening("focus_open_wtr0", GRO_WT2R0, XTC_WT2R0, f0 = 5000, f1 = 6000)
-    gen_vmd_focus_opening("focus_open_wtr1", GRO_WT2R1, XTC_WT2R1, f0 = 5000, f1 = 6000)
+    ################################
+    # gen_vmd_active_site_partE("focus_AS_mtr0", GRO_MT2R0, XTC_MT2R0, f1 = -1)
+    # gen_vmd_active_site_partE("focus_AS_mtr1", GRO_MT2R1, XTC_MT2R1, f1 = -1)
+    # gen_vmd_active_site_partE("focus_AS_wtr0", GRO_WT2R0, XTC_WT2R0, f1 = -1)
+    # gen_vmd_active_site_partE("focus_AS_wtr1", GRO_WT2R1, XTC_WT2R1, f1 = -1)
 
+    gen_vmd_active_site_partA("focus_ASa_mtr0", GRO_MT2R0, XTC_MT2R0, f0 = 5000, f1 = 6000)
+
+    # //////////////////////////////////////////////////////////////////////////////
     #### residues with high RMSF on mutated, compared to wt:
     # (residue >= 45 and residue <= 50) or (residue >= 289 and residue <= 312) or (residue >= 350 and residue <= 356) or (residue >= 593)
+
+    #### residues near the active site
+    # 46 141 142 166 168 189 190 191
