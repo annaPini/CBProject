@@ -1,19 +1,10 @@
 *__pycache__*
 
 *.xtc
-
-*.docx
-
 *.doc
-
-src_analysis/mail.txt
+*.docx
+*.ipynb
 
 data_analysis/
 data_extra/
-
 data_md/*_rep*
-
-
-*.ipynb
-
-src_analysis/sasa.sh

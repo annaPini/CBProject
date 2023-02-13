@@ -4,17 +4,16 @@ from MDAnalysis.lib import distances
 from MDAnalysis.analysis.rms import rmsd, RMSF
 from scipy.cluster.hierarchy import dendrogram, linkage, fcluster
 
-
 # //////////////////////////////////////////////////////////////////////////////
-def extract_ca_coords(traj, coords_dir):
-    print(f">>> Preparing '{coords_dir.name}'...")
+def extract_ca_coords(traj, path_coords):
+    print(f">>> Preparing '{path_coords.name}'...")
     coords = np.array([traj.select_atoms("protein and name CA").positions for _ in traj.trajectory[:]])
-    np.save(coords_dir, coords, allow_pickle = False)
+    np.save(path_coords, coords, allow_pickle = False)
     return coords
 
 # ------------------------------------------------------------------------------
-def calc_rmsd(coords, rmsd_dir):
-    print(f">>> Preparing '{rmsd_dir.name}'...")
+def calc_rmsd(coords, path_rmsd):
+    print(f">>> Preparing '{path_rmsd.name}'...")
     n_frames = coords.shape[0]
 
     print(f"...>>> Calculating (non-redundant) all-to-all RMSD for {n_frames} frames...")
@@ -25,25 +24,25 @@ def calc_rmsd(coords, rmsd_dir):
     for i,res in enumerate(result, 1):
         rmsd_map[i,:i] = rmsd_map[:i,i] = res
 
-    print(f"...>>> Saving rmsd.npy file...")
-    np.save(rmsd_dir, rmsd_map, allow_pickle = False)
+    print(f"...>>> Saving '{path_rmsd.name}'...")
+    np.save(path_rmsd, rmsd_map, allow_pickle = False)
 
 # ------------------------------------------------------------------------------
-def calc_rmsf(traj, rmsf_dir):
-    print(f">>> Preparing '{rmsf_dir.name}'...")
+def calc_rmsf(traj, path_rmsf):
+    print(f">>> Preparing '{path_rmsf.name}'...")
 
     ca_atoms = traj.select_atoms("protein and name CA")
     print("...>>> Calculating RMSF...")
     rmsf_CA = RMSF(ca_atoms).run()
-    np.save(rmsf_dir, rmsf_CA.rmsf, allow_pickle = False)
+    np.save(path_rmsf, rmsf_CA.rmsf, allow_pickle = False)
     print("...>>> Done.")
 
 # ------------------------------------------------------------------------------
-def calc_rgyr(traj, rgyr_dir):
-    print(f">>> Preparing '{rgyr_dir.name}'...")
+def calc_rgyr(traj, path_rgyr):
+    print(f">>> Preparing '{path_rgyr.name}'...")
 
     rgyr = [traj.select_atoms("protein and name CA").radius_of_gyration() for _ in traj.trajectory[:]]
-    np.save(rgyr_dir, rgyr, allow_pickle = False)
+    np.save(path_rgyr, rgyr, allow_pickle = False)
     print("...>>> Done.")
 
 # ------------------------------------------------------------------------------
@@ -51,11 +50,11 @@ def calc_cmap(coords_frame): # for the backbone
     return distances.distance_array(coords_frame, coords_frame)
 
 # ------------------------------------------------------------------------------
-def calc_link(rmsd_dir, link_dir, link_method):
-    print(f">>> Preparing '{link_dir.name}'...")
-    rmsd_mat = np.load(rmsd_dir)
+def calc_link(path_rmsd, path_link, link_method):
+    print(f">>> Preparing '{path_link.name}'...")
+    rmsd_mat = np.load(path_rmsd)
     Z = linkage(rmsd_mat, link_method)
-    np.save(link_dir, Z, allow_pickle = False)
+    np.save(path_link, Z, allow_pickle = False)
     print("...>>> Done.")
 
 def calc_cluster(Z, t, label_criterion):

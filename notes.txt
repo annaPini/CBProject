@@ -2,7 +2,6 @@
 NOTES AND EXTRA STUFF
 =====================
 
-sasa --> "solvent accesible surface area"
 vmd --> extensions --> volmap tool
 
 8f - 7f
@@ -21,6 +20,17 @@ mt = 8DFN
 ACTIVE SITE: 41, 145
 MUTATION: 164 (wt = H, mt = N)
 
+
+A: resid 145 and name HG1
+B:
+C:
+D:
+E:
+F:
+G:
+H:
+I:
+
 ++++++++++++++++++++++++++++++++++++++
 mt1
 mt2
@@ -37,11 +47,22 @@ wt2_rep0
 wt2_rep1
 
 ++++++++++++++++++++++++++++++++++++++
+https://ezgif.com/
 Preparing GIFS:
     RMSD sliders:
         Video Crop: 170 43 1576 816
         Time Selection: _ _
+        video --> gif
         Compression level: 150
 
+    VMD post processing:
+        Video Crop: 0 0 1529 792
+        video --> gif
+        Compression level: 150
 
 ++++++++++++++++++++++++++++++++++++++
+sasa --> "solvent accesible surface area"
+"sfe.xvg"  # solvation free energy as a function of time
+"or.xvg"  # average area per residue
+"oa.xvg"  # average area per atom
+"volume.xvg"  # total volume and density as a function of time

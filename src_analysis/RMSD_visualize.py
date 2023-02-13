@@ -6,7 +6,7 @@ from matplotlib.widgets import Slider, Button
 from matplotlib.pyplot import cm
 
 # //////////////////////////////////////////////////////////////////////////////
-class RMSDPlotter:
+class RMSD_Plotter:
     def __init__(self, rmsd_mat, title = ''):
         print(f">>> Plotting RMSD for '{title}'...")
         self.rmsd_mat = rmsd_mat
@@ -15,7 +15,7 @@ class RMSDPlotter:
         self.ax.set_title(title, fontdict = dict(fontsize = 20))
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-class RMSD_2D(RMSDPlotter):
+class RMSD_2D(RMSD_Plotter):
     def __init__(self, rmsd_mat, title = ''):
         super().__init__(rmsd_mat, title)
 
@@ -30,7 +30,7 @@ class RMSD_2D(RMSDPlotter):
 
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-class RMSD_1D(RMSDPlotter):
+class RMSD_1D(RMSD_Plotter):
     init_ref_frame = 0
 
     def __init__(self, rmsd_mat, title = ''):

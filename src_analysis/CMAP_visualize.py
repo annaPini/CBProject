@@ -4,7 +4,9 @@ import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider, Button
 
 # //////////////////////////////////////////////////////////////////////////////
-class CMAPPlotter:
+class CMAP_Plotter:
+    do_abs_on_diff = True
+
     def __init__(self, coords, title = ''):
         print(f">>> Plotting CMAP for '{title}'...")
         self.coords = coords
@@ -14,6 +16,8 @@ class CMAPPlotter:
         self.ax.set_xlabel("CA atom", fontdict = dict(fontsize = 16))
         self.ax.set_ylabel("CA atom", fontdict = dict(fontsize = 16))
         self.ax.tick_params(labelsize = 12)
+
+        self.do_abs = abs if do_abs_on_diff else (lambda x:x)
 
     def vis_cmap(self, cmap, color_method):
         self.im = self.ax.imshow(cmap, cmap = color_method)
@@ -26,17 +30,17 @@ class CMAPPlotter:
     def diff_cmap(self, frame0, frame1, color_method = "Blues"):
         cmap0 = calc_cmap(self.coords[frame0])
         cmap1 = calc_cmap(self.coords[frame1])
-        self.vis_cmap(abs(cmap1 - cmap0), color_method)
+        self.vis_cmap(self.do_abs(cmap1 - cmap0), color_method)
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-class CMAP_Basic(CMAPPlotter):
-    def __init(self, coords, title = ''):
+class CMAP_Basic(CMAP_Plotter):
+    def __init__(self, coords, title = ''):
         super().__init__(coords, title)
         self.fig.subplots_adjust(bottom = 0.1, top = 0.9, left = 0.15, right = 0.95)
 
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-class CMAP_Interactive(CMAPPlotter):
+class Dynamic_CMAP(CMAP_Plotter):
     def __init__(self, coords, title = '', min_frame = 0, max_frame = 6000):
         self.min_frame = min_frame
         self.max_frame = max_frame
@@ -71,7 +75,7 @@ class CMAP_Interactive(CMAPPlotter):
 
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-class CMAP_Diff_1mol_2frames(CMAP_Interactive):
+class DCMD_1mol_2frames(Dynamic_CMAP):
     def init_plot(self):
         self.diff_cmap(self.min_frame, self.min_frame + 1, "seismic")
         self.init_slider_frame0()
@@ -91,16 +95,15 @@ class CMAP_Diff_1mol_2frames(CMAP_Interactive):
         frame0 = self.slid_frame0.val
         frame1 = self.slid_frame1.val
         # diff = calc_cmap(self.coords[frame1]) - calc_cmap(self.coords[frame0])
-        diff = abs(calc_cmap(self.coords[frame1]) - calc_cmap(self.coords[frame0]))
+        diff = self.do_abs(calc_cmap(self.coords[frame1]) - calc_cmap(self.coords[frame0]))
 
         self.im.set_data(diff)
-        # self.im.set_clim(vmin = np.min(diff), vmax = np.max(diff))
-        self.im.set_clim(0, vmax = np.max(diff))
+        self.im.set_clim(vmin = np.min(diff), vmax = np.max(diff))
         self.colorbar.update_normal(self.im)
 
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-class CMAP_Diff_2mol_1frame(CMAP_Interactive):
+class DCMD_2mol_1frame(Dynamic_CMAP):
     def __init__(self, coords0, coords1, title = '', min_frame = 0, max_frame = 6000):
         self.coords1 = coords1
         super().__init__(coords0, title, min_frame, max_frame)
@@ -108,14 +111,14 @@ class CMAP_Diff_2mol_1frame(CMAP_Interactive):
     def init_plot(self):
         cmap0 = calc_cmap(self.coords[self.min_frame])
         cmap1 = calc_cmap(self.coords1[self.min_frame])
-        self.vis_cmap(abs(cmap1 - cmap0), "seismic")
+        self.vis_cmap(self.do_abs(cmap1 - cmap0), "seismic")
 
         self.init_slider_frame0()
 
     # --------------------------------------------------------------------------
     def update_cmap(self, val):
         frame = self.slid_frame0.val
-        diff = abs(calc_cmap(self.coords1[frame]) - calc_cmap(self.coords[frame]))
+        diff = self.do_abs(calc_cmap(self.coords1[frame]) - calc_cmap(self.coords[frame]))
 
         self.im.set_data(diff)
         self.im.set_clim(0, vmax = np.max(diff))
@@ -142,10 +145,10 @@ if __name__ == "__main__":
     # CMAP_Basic(coords_mt2, "Before and After").diff_cmap(frame_before, frame_after)
 
     # --------------------------------------------------------------------------
-    # cmi = CMAP_Interactive(coords_mt2, "mt2_rep0")
-    # cmdiff = CMAP_Diff_1mol_2frames(coords_mt2, "mt2_rep0")
-    cmdiff_a = CMAP_Diff_1mol_2frames(coords_wt2, "mt2_rep0", min_frame = 4000, max_frame = 6000)
-    cmdiff_b = CMAP_Diff_2mol_1frame(coords_mt2, coords_wt2, "mt2 vs wt2", min_frame = 4000, max_frame = 6000)
+    # cmi = Dynamic_CMAP(coords_mt2, "mt2_rep0")
+    # cmdiff = DCMD_1mol_2frames(coords_mt2, "mt2_rep0")
+    cmdiff_a = DCMD_1mol_2frames(coords_wt2, "mt2_rep0", min_frame = 4000, max_frame = 6000)
+    cmdiff_b = DCMD_2mol_1frame(coords_mt2, coords_wt2, "mt2 vs wt2", min_frame = 4000, max_frame = 6000)
 
     # --------------------------------------------------------------------------
     plt.show()
