@@ -1,5 +1,5 @@
 from parameters import *
-from calculate_general import calc_cmap
+from calculate_general import calc_cmap, calc_cmap_AS
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider, Button
 
@@ -125,11 +125,30 @@ class DCMD_2mol_1frame(Dynamic_CMAP):
         self.colorbar.update_normal(self.im)
 
 
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+def plot_cmap_AS(coords):
+    A = coords[:,0,:]
+    B = coords[:,1,:]
+
+    print(A.shape)
+
+    dist_AB = calc_cmap_AS(A,B)
+
+    print(dist_AB.shape)
+    # im = plt.imshow(dist_AB, cmap = "Reds")
+    # plt.colorbar(im)
+
+
+    # plt.plot(dist_AB)
+
+
 # //////////////////////////////////////////////////////////////////////////////
 if __name__ == "__main__":
     coords_mt1 = np.load(DIR_DA_TRAJECTORIES / "mt1_rep0-coords.npy")
     coords_mt2 = np.load(DIR_DA_TRAJECTORIES / "mt2_rep0-coords.npy")
     coords_wt2 = np.load(DIR_DA_TRAJECTORIES / "wt2_rep0-coords.npy")
+
+    PATH_AS_COORDS = DIR_DA_SPECIFIC / "mt2_rep0-AS_coords.npy"
 
     # --------------------------------------------------------------------------
     # CMAP_Basic(coords_mt1, "mt1_rep0").base_cmap(frame = 0)
@@ -147,8 +166,12 @@ if __name__ == "__main__":
     # --------------------------------------------------------------------------
     # cmi = Dynamic_CMAP(coords_mt2, "mt2_rep0")
     # cmdiff = DCMD_1mol_2frames(coords_mt2, "mt2_rep0")
-    cmdiff_a = DCMD_1mol_2frames(coords_wt2, "mt2_rep0", min_frame = 4000, max_frame = 6000)
-    cmdiff_b = DCMD_2mol_1frame(coords_mt2, coords_wt2, "mt2 vs wt2", min_frame = 4000, max_frame = 6000)
+    # cmdiff_a = DCMD_1mol_2frames(coords_wt2, "mt2_rep0", min_frame = 4000, max_frame = 6000)
+    # cmdiff_b = DCMD_2mol_1frame(coords_mt2, coords_wt2, "mt2 vs wt2", min_frame = 4000, max_frame = 6000)
+
+    # --------------------------------------------------------------------------
+    coords = np.load(PATH_AS_COORDS)
+    plot_cmap_AS(coords)
 
     # --------------------------------------------------------------------------
     plt.show()

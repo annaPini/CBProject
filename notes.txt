@@ -21,15 +21,16 @@ ACTIVE SITE: 41, 145
 MUTATION: 164 (wt = H, mt = N)
 
 
-A: resid 145 and name HG1
-B:
-C:
-D:
-E:
-F:
-G:
-H:
-I:
+A: resid 145 and name SG
+B: resid 41 and name NE2
+C: resid 41 and name CE1
+D: resid 164 and name O
+E: resid 41 and name ND1
+F: resid 164 and name 'ND*'
+G: resid 187 and name OD2
+H: resid 40 and name NE
+I: resid 187 and name OD1
+J: resid 40 and name NH2
 
 ++++++++++++++++++++++++++++++++++++++
 mt1

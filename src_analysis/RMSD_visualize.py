@@ -1,5 +1,5 @@
 from parameters import *
-from calculate_general import calc_cluster
+from calculate_specific import calc_cluster
 
 from matplotlib import pyplot as plt
 from matplotlib.widgets import Slider, Button
@@ -267,7 +267,7 @@ if __name__ == "__main__":
     # PATH_RMSD0 = DIR_DA_GENERAL / f"{run0}-rmsd.npy"
     # PATH_RMSD1 = DIR_DA_GENERAL / f"{run1}-rmsd.npy"
     #
-    # PATH_LINK = DIR_DA_GENERAL / f"{run0}-link.npy"
+    # PATH_LINK = DIR_DA_SPECIFIC / f"{run0}-link.npy"
     # Z = np.load(PATH_LINK)
     #
     #

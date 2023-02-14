@@ -2,7 +2,6 @@ from parameters import *
 import MDAnalysis as mda
 from MDAnalysis.lib import distances
 from MDAnalysis.analysis.rms import rmsd, RMSF
-from scipy.cluster.hierarchy import dendrogram, linkage, fcluster
 
 # //////////////////////////////////////////////////////////////////////////////
 def extract_ca_coords(traj, path_coords):
@@ -46,19 +45,11 @@ def calc_rgyr(traj, path_rgyr):
     print("...>>> Done.")
 
 # ------------------------------------------------------------------------------
-def calc_cmap(coords_frame): # for the backbone
+def calc_cmap(coords_frame):
     return distances.distance_array(coords_frame, coords_frame)
 
-# ------------------------------------------------------------------------------
-def calc_link(path_rmsd, path_link, link_method):
-    print(f">>> Preparing '{path_link.name}'...")
-    rmsd_mat = np.load(path_rmsd)
-    Z = linkage(rmsd_mat, link_method)
-    np.save(path_link, Z, allow_pickle = False)
-    print("...>>> Done.")
-
-def calc_cluster(Z, t, label_criterion):
-    return fcluster(Z, t = t, criterion = label_criterion)
+def calc_cmap_AS(coords0, coords1):
+    return distances.distance_array(coords0, coords1)
 
 # //////////////////////////////////////////////////////////////////////////////
 if __name__ == "__main__":
@@ -71,7 +62,6 @@ if __name__ == "__main__":
         PATH_RMSD   = DIR_DA_GENERAL      / f"{run}-rmsd.npy"
         PATH_RMSF   = DIR_DA_GENERAL      / f"{run}-rmsf.npy"
         PATH_RGYR   = DIR_DA_GENERAL      / f"{run}-rgyr.npy"
-        PATH_LINK   = DIR_DA_GENERAL      / f"{run}-link.npy"
 
         #########################################
         traj = mda.Universe(str(PATH_GRO), str(PATH_XTC))
@@ -80,6 +70,5 @@ if __name__ == "__main__":
         if not PATH_RMSD.exists(): calc_rmsd(coords, PATH_RMSD)
         if not PATH_RMSF.exists(): calc_rmsf(traj, PATH_RMSF)
         if not PATH_RGYR.exists(): calc_rgyr(traj, PATH_RGYR)
-        if not PATH_LINK.exists(): calc_link(PATH_RMSD, PATH_LINK, link_method = "ward")
 
 # //////////////////////////////////////////////////////////////////////////////

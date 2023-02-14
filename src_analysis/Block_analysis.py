@@ -1,18 +1,13 @@
 from parameters import *
-import numpy as np
-import matplotlib.pyplot as plt
-from pathlib import Path
-from os import fspath
-#%matplotlib inline
-import seaborn as sns
-import math
-import pandas as pd
 import MDAnalysis as mda
 from MDAnalysis.analysis.rms import RMSD
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 from scipy.stats import multivariate_normal
 
 #Naive version of BSE: the mean value is not stable since we are leaving out the last block.
-def BSE_naive(arr): 
+def BSE_naive(arr):
     v = arr
     n = len(arr)
     l = []
@@ -27,7 +22,7 @@ def BSE_naive(arr):
     return l
 
 # Returns a vector s(m) with the std-dev computed according to the Block Analysis method. The average is stable, needs more testing.
-def BSE_alternate(arr):    
+def BSE_alternate(arr):
     v = arr
     n = len(arr)
     a = []
@@ -53,19 +48,19 @@ def BSE_alternate(arr):
     s = np.asarray(s)
     s = np.sqrt(s)
     a = np.asarray(a)
-     #return a,s # a is the average, check that it is constant. 
+     #return a,s # a is the average, check that it is constant.
     return s
 
 def calc_rmsd1D (rmsd_dir):
     rmsd = np.load(rmsd_dir)
-    return rmsd[0] # riga 0, tutte le colonne 
+    return rmsd[0] # riga 0, tutte le colonne
     #traj = mda.Universe(str(gro_dir),str(traj_dir))
     #rmsd = RMSD(traj,select='name CA', groupselections=['backbone', 'resid 20:50'])
     # rmsd.run()
 
 
 #Create a covariance matrix with a given correlation length
-def get_cov_matrix(size,length):   
+def get_cov_matrix(size,length):
     x = np.arange(size)
     cov = np.exp(-(1/length)*(x-np.atleast_2d(x).T)**2)
     return cov
@@ -79,7 +74,7 @@ def get_err_on_avg(cov_mat):
 
 if __name__ == "__main__":
     #for run in RUNS:
-        
+
         #PATH_GRO     = DIR_DA_TRAJECTORIES / f"{run}.gro"
         #PATH_XTC     = DIR_DA_TRAJECTORIES / f"{run}.xtc"
         #RMSD_OUT  = DIR_DA_BLOCK_ANALYSIS / f"{run}-rmsd.npy"
@@ -100,6 +95,3 @@ if __name__ == "__main__":
     sns.heatmap(cov)
 
     plt.show()
-
-
-    
