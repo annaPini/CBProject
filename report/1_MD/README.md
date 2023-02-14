@@ -96,6 +96,13 @@ Given the large amount of integration steps required for this phase, it is perti
 
 The benchmark process for choosing the right amount of cores is as following. The unrestrained MD was performed with a walltime of $10$ and $30$ minutes. We also repeated the benchmarks two times for each walltime. We noticed that the efficiency obtained with the same number of cores and walltime was not constant. This is probably due to the simulation running on different cores every time, which might have different performances.
 
+In the graph below it is shown, as an example, the benchmark performed for the NVT equilibration. It can be easily observed that the nanoseconds in the simulation processed in a day, in $ns/day$, and the efficiency, in $h/ns$ then the hours to perform a nanosecond of simulation,depend on the wall time. 
+It can be also observed that the outcomes obtained for different repetions are different.
+
+![benchmark_nvt_10_30_h_ns.png](https://github.com/annaPini/CBProject/blob/main/report/1_MD/benchmark_nvt_10_30_h_ns.png)
+
+![benchmark_nvt_10_30_ns_day.png](https://github.com/annaPini/CBProject/blob/main/report/1_MD/benchmark_nvt_10_30_ns_day.png)
+
 
 # Post processing
 If the resulting ```md_plain.xtc``` trajectories are observed, it is evident that they need further processing before analysing them. The script ```3_POST.sh``` is provided to deal with this. This is how the trajectories behave originally:
