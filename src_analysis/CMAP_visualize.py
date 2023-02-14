@@ -1,7 +1,10 @@
 from parameters import *
 from calculate_general import calc_cmap, calc_cmap_AS
+import pandas as pd
+import seaborn as sns
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider, Button
+
 
 # //////////////////////////////////////////////////////////////////////////////
 class CMAP_Plotter:
@@ -126,20 +129,34 @@ class DCMD_2mol_1frame(Dynamic_CMAP):
 
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-def plot_cmap_AS(coords):
-    A = coords[:,0,:]
-    B = coords[:,1,:]
+def plot_cmap_AS(*coords_list):
 
-    print(A.shape)
+    coords = coords_list[0]
 
-    dist_AB = calc_cmap_AS(A,B)
+    atoms = {atom : coords[:,i,:] for i,atom in enumerate("ABCDEFGHIJ")}
 
-    print(dist_AB.shape)
+    distance = {}
+
+    print (f">>> Calculating CMAPs...")
+    distance["AB"] = np.diag(calc_cmap_AS(atoms['A'], atoms['B']))
+    distance["CD"] = np.diag(calc_cmap_AS(atoms['C'], atoms['D']))
+    distance["EF"] = np.diag(calc_cmap_AS(atoms['E'], atoms['F']))
+    distance["FG"] = np.diag(calc_cmap_AS(atoms['F'], atoms['G']))
+    distance["EG"] = np.diag(calc_cmap_AS(atoms['E'], atoms['G']))
+    distance["GH"] = np.diag(calc_cmap_AS(atoms['G'], atoms['H']))
+    distance["IJ"] = np.diag(calc_cmap_AS(atoms['I'], atoms['J']))
+
     # im = plt.imshow(dist_AB, cmap = "Reds")
     # plt.colorbar(im)
+    print (f">>> Plotting...")
 
+    df = pd.DataFrame(distance)
+    df["system"] = "mt2_as1"
+    print(df)
 
-    # plt.plot(dist_AB)
+    # sns.catplot(data = df, kind = "boxen", hue = "system")
+    sns.catplot(data = df, kind = "boxen")
+    plt.show(block = True)
 
 
 # //////////////////////////////////////////////////////////////////////////////
@@ -148,7 +165,12 @@ if __name__ == "__main__":
     coords_mt2 = np.load(DIR_DA_TRAJECTORIES / "mt2_rep0-coords.npy")
     coords_wt2 = np.load(DIR_DA_TRAJECTORIES / "wt2_rep0-coords.npy")
 
-    PATH_AS_COORDS = DIR_DA_SPECIFIC / "mt2_rep0-AS_coords.npy"
+    coords_mt2_as0 = np.load(DIR_DA_SPECIFIC / "mt2_rep0-AS_coords.npy")
+    coords_mt2_as1 = np.load(DIR_DA_SPECIFIC / "mt2_rep0-AS_coords1.npy")
+    coords_wt2_as0 = np.load(DIR_DA_SPECIFIC / "wt2_rep0-AS_coords.npy")
+    coords_wt2_as1 = np.load(DIR_DA_SPECIFIC / "wt2_rep0-AS_coords1.npy")
+
+
 
     # --------------------------------------------------------------------------
     # CMAP_Basic(coords_mt1, "mt1_rep0").base_cmap(frame = 0)
@@ -170,11 +192,9 @@ if __name__ == "__main__":
     # cmdiff_b = DCMD_2mol_1frame(coords_mt2, coords_wt2, "mt2 vs wt2", min_frame = 4000, max_frame = 6000)
 
     # --------------------------------------------------------------------------
-    coords = np.load(PATH_AS_COORDS)
-    plot_cmap_AS(coords)
+    plot_cmap_AS(coords_mt2_as0, coords_mt2_as1, coords_wt2_as0, coords_wt2_as1)
 
     # --------------------------------------------------------------------------
     plt.show()
-
 
 # //////////////////////////////////////////////////////////////////////////////
