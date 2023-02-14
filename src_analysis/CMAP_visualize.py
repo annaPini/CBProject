@@ -20,7 +20,7 @@ class CMAP_Plotter:
         self.ax.set_ylabel("CA atom", fontdict = dict(fontsize = 16))
         self.ax.tick_params(labelsize = 12)
 
-        self.do_abs = abs if do_abs_on_diff else (lambda x:x)
+        self.do_abs = abs if self.do_abs_on_diff else (lambda x:x)
 
     def vis_cmap(self, cmap, color_method):
         self.im = self.ax.imshow(cmap, cmap = color_method)
@@ -129,48 +129,64 @@ class DCMD_2mol_1frame(Dynamic_CMAP):
 
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-def plot_cmap_AS(*coords_list):
+def plot_cmap_AS(coords_AS):
 
-    coords = coords_list[0]
+    sns.set_palette("bwr")
 
-    atoms = {atom : coords[:,i,:] for i,atom in enumerate("ABCDEFGHIJ")}
+    fig, ax = plt.subplots()
 
-    distance = {}
+    interactions = ["AB", "CD", "EF", "FG", "EG", "GH", "IJ"]
 
+    df = pd.DataFrame(columns = ["system", "interaction", "distance"])
     print (f">>> Calculating CMAPs...")
-    distance["AB"] = np.diag(calc_cmap_AS(atoms['A'], atoms['B']))
-    distance["CD"] = np.diag(calc_cmap_AS(atoms['C'], atoms['D']))
-    distance["EF"] = np.diag(calc_cmap_AS(atoms['E'], atoms['F']))
-    distance["FG"] = np.diag(calc_cmap_AS(atoms['F'], atoms['G']))
-    distance["EG"] = np.diag(calc_cmap_AS(atoms['E'], atoms['G']))
-    distance["GH"] = np.diag(calc_cmap_AS(atoms['G'], atoms['H']))
-    distance["IJ"] = np.diag(calc_cmap_AS(atoms['I'], atoms['J']))
 
-    # im = plt.imshow(dist_AB, cmap = "Reds")
-    # plt.colorbar(im)
+    for system,coords in coords_AS.items():
+
+        atoms = {atom : coords[:,i,:] for i,atom in enumerate("ABCDEFGHIJ")}
+
+        for atom0, atom1 in interactions:
+            new_df = pd.DataFrame({"distance" : np.diag(calc_cmap_AS(atoms[atom0], atoms[atom1]))})
+            new_df["interaction"] = atom0 + atom1
+            new_df["system"] = system
+            df = df.append(new_df)
+
+
     print (f">>> Plotting...")
+    # # sns.catplot(data = df, x = "interaction", y = "distance", hue = "system", kind = "boxen")
+    # sns.boxplot(data = df, x = "interaction", y = "distance", hue = "system")
+    # sns.catplot(data = df, x = "interaction", y = "distance", hue = "system", kind = "point")
+    # plt.show(block = True)
 
-    df = pd.DataFrame(distance)
-    df["system"] = "mt2_as1"
-    print(df)
+    # sns.catplot(data = df, x = "interaction", y = "distance", hue = "system", kind = "boxen", ax = ax)
+    # sns.catplot(data = df, x = "interaction", y = "distance", hue = "system", kind = "point", ax = ax)
+    #
 
-    # sns.catplot(data = df, kind = "boxen", hue = "system")
-    sns.catplot(data = df, kind = "boxen")
+    # sns.boxplot(data = df, x = "interaction", y = "distance", hue = "system", ax = ax)
+    sns.pointplot(data = df, x = "interaction", y = "distance", hue = "system", ax = ax)
+
+
     plt.show(block = True)
+
+
 
 
 # //////////////////////////////////////////////////////////////////////////////
 if __name__ == "__main__":
-    coords_mt1 = np.load(DIR_DA_TRAJECTORIES / "mt1_rep0-coords.npy")
-    coords_mt2 = np.load(DIR_DA_TRAJECTORIES / "mt2_rep0-coords.npy")
-    coords_wt2 = np.load(DIR_DA_TRAJECTORIES / "wt2_rep0-coords.npy")
 
-    coords_mt2_as0 = np.load(DIR_DA_SPECIFIC / "mt2_rep0-AS_coords.npy")
-    coords_mt2_as1 = np.load(DIR_DA_SPECIFIC / "mt2_rep0-AS_coords1.npy")
-    coords_wt2_as0 = np.load(DIR_DA_SPECIFIC / "wt2_rep0-AS_coords.npy")
-    coords_wt2_as1 = np.load(DIR_DA_SPECIFIC / "wt2_rep0-AS_coords1.npy")
+    rep = 1
 
+    coords_mt1 = np.load(DIR_DA_TRAJECTORIES / f"mt1_rep{rep}-coords.npy")
+    coords_mt2 = np.load(DIR_DA_TRAJECTORIES / f"mt2_rep{rep}-coords.npy")
+    coords_wt2 = np.load(DIR_DA_TRAJECTORIES / f"wt2_rep{rep}-coords.npy")
 
+    active_sites = {
+        "mt1_as0" : np.load(DIR_DA_SPECIFIC / f"mt1_rep{rep}-AS_coords.npy"),
+        "mt2_as0" : np.load(DIR_DA_SPECIFIC / f"mt2_rep{rep}-AS_coords.npy"),
+        "mt2_as1" : np.load(DIR_DA_SPECIFIC / f"mt2_rep{rep}-AS_coords1.npy"),
+        "wt1_as0" : np.load(DIR_DA_SPECIFIC / f"wt1_rep{rep}-AS_coords.npy"),
+        "wt2_as0" : np.load(DIR_DA_SPECIFIC / f"wt2_rep{rep}-AS_coords.npy"),
+        "wt2_as1" : np.load(DIR_DA_SPECIFIC / f"wt2_rep{rep}-AS_coords1.npy"),
+    }
 
     # --------------------------------------------------------------------------
     # CMAP_Basic(coords_mt1, "mt1_rep0").base_cmap(frame = 0)
@@ -186,13 +202,13 @@ if __name__ == "__main__":
     # CMAP_Basic(coords_mt2, "Before and After").diff_cmap(frame_before, frame_after)
 
     # --------------------------------------------------------------------------
-    # cmi = Dynamic_CMAP(coords_mt2, "mt2_rep0")
-    # cmdiff = DCMD_1mol_2frames(coords_mt2, "mt2_rep0")
+    # # cmi = Dynamic_CMAP(coords_mt2, "mt2_rep0")
+    # # cmdiff = DCMD_1mol_2frames(coords_mt2, "mt2_rep0")
     # cmdiff_a = DCMD_1mol_2frames(coords_wt2, "mt2_rep0", min_frame = 4000, max_frame = 6000)
     # cmdiff_b = DCMD_2mol_1frame(coords_mt2, coords_wt2, "mt2 vs wt2", min_frame = 4000, max_frame = 6000)
 
     # --------------------------------------------------------------------------
-    plot_cmap_AS(coords_mt2_as0, coords_mt2_as1, coords_wt2_as0, coords_wt2_as1)
+    # plot_cmap_AS(active_sites)
 
     # --------------------------------------------------------------------------
     plt.show()

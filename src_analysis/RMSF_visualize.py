@@ -8,7 +8,6 @@ def vis_2rmsf(rmsf0, rmsf1, title = '', label0 = '', label1 = ''):
     frames = np.arange(max(rmsf0.size, rmsf1.size))
     fig, ax = plt.subplots()
 
-    # ax.set_facecolor((0, 0, 0))
     ax.set_title(title, fontdict = dict(fontsize = 20))
     ax.set_xlabel("CA atom", fontdict = dict(fontsize = 16))
     ax.set_ylabel("RMSF", fontdict = dict(fontsize = 16))

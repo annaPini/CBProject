@@ -63,6 +63,11 @@ def extract_AS_coords(traj, path_coords, single_subunit = False): # active site 
         np.save(PATH_AS_COORDS, coords[:, 0::2, :], allow_pickle = False)
         np.save(PATH_AS_COORDS.parent / f"{PATH_AS_COORDS.stem}1.npy", coords[:, 1::2, :], allow_pickle = False)
 
+# ------------------------------------------------------------------------------
+def calc_cmap_AS(coords_AS):
+    pass
+
+# ------------------------------------------------------------------------------
 # //////////////////////////////////////////////////////////////////////////////
 if __name__ == "__main__":
     for run in RUNS:
