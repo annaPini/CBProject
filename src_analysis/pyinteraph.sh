@@ -17,7 +17,7 @@ pyinteraph -s $PATH_TPR -t $PATH_XTC -r $PATH_GRO -f --hc-co 5 -f --hc-graph mt2
 ###################
 ### cutoff for occurrence percentage
 filter_graph -d mt2_rep0-sb_graph_all.dat -c mt2_rep0-clusters_size_sb.dat -p mt2_rep0-clusters_plot_sb.pdf
-# filter_graph -d mt2_rep0-hb_graph_all.dat -c mt2_rep0-clusters_size_hb.dat -p CLUSTER_PLOT_HB
+# filter_graph -d mt2_rep0-hb_graph_all.dat -c mt2_rep0-clusters_size_hb.dat -p mt2_rep0-clusters_plot_hb.pdf
 filter_graph -d mt2_rep0-hc_graph_all.dat -c mt2_rep0-clusters_size_hc.dat -p mt2_rep0-clusters_plot_hc.pdf
 
 ### filtering the graphs using the identified cutoff of the occurrence percentage
