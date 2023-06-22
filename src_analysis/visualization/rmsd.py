@@ -238,10 +238,6 @@ class RMSD_1D_Compare(RMSD_1D):
 
 
 if __name__ == "__main__":
-    # COLOR_MAP = "rainbow"
-    # COLOR_MAP = "prism"
-    COLOR_MAP = "hsv"
-
     rmsds = []
 
     ############################################################################
@@ -277,7 +273,7 @@ if __name__ == "__main__":
     # # rmsds.append(RMSD_2D(rmsd_mat0))
     # # rmsds.append(RMSD_1D(rmsd_mat0))
     # # rmsds.append(RMSD_1D_WAD(rmsd_mat0))
-    # # rmsds.append(RMSD_1D_Clustering(rmsd_mat0, Z, COLOR_MAP))
+    # # rmsds.append(RMSD_1D_Clustering(rmsd_mat0, Z, COLOR_MAP_RMSD))
     # rmsds.append(RMSD_1D_Compare(rmsd_mat0, rmsd_mat1))
     #
 

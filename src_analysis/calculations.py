@@ -9,14 +9,14 @@ from scipy.cluster.hierarchy import dendrogram, linkage, fcluster
 # //////////////////////////////////////////////////////////////////////////////
 # ------------------------------------------------------------------------------ COORDINATES EXTRACTION
 def extract_ca_coords(traj, path_coords):
-    print(f">>> Preparing '{path_coords.name}'...")
+    print(f">>> Preparing '_coords/{path_coords.name}'...")
     coords = np.array([traj.select_atoms("protein and name CA").positions for _ in traj.trajectory[:]])
     np.save(path_coords, coords, allow_pickle = False)
     return coords
 
 def extract_AS_coords(traj, path_coords_as, single_subunit = False):
     """Extract Active Site coordinates specifically for 8DFN and 7SI9"""
-    print(f">>> Preparing '{path_coords_as.name}'...")
+    print(f">>> Preparing '_coords/{path_coords_as.name}' (Active Site)...")
 
     selections = [
         "resid 145 and name SG",
@@ -42,21 +42,20 @@ def extract_AS_coords(traj, path_coords_as, single_subunit = False):
     if single_subunit:
         np.save(path_coords_as, coords, allow_pickle = False)
     else:
-        np.save(path_coords_as.parent / f"{path_coords_as.stem}-AS0.coords.npy", coords[:, 0::2, :], allow_pickle = False)
-        np.save(path_coords_as.parent / f"{path_coords_as.stem}-AS1.coords.npy", coords[:, 1::2, :], allow_pickle = False)
+        np.save(path_coords_as, coords[:, 0::2, :], allow_pickle = False)
+        np.save(path_coords_as.parent / f"{path_coords_as.stem}-AS1.npy", coords[:, 1::2, :], allow_pickle = False)
 
 
 # ------------------------------------------------------------------------------ BSE
-def calc_bse_naive(rmsd_1d, path_bse):
+def calc_bse_naive(path_rmsd, path_bse):
     """Naive version of BSE: the mean value is not stable since we are leaving out the last block.
     Adapted from the script provided by professor Tubiana."""
 
     print(f">>> Preparing 'bse/{path_bse.name}'...")
 
-    v = rmsd_1d
-    n = len(rmsd_1d)
+    v = np.load(path_rmsd)[0]
+    n = len(v)
     l = []
-    #for i in [2**j for j in range(1,10)]:
     for i in range(1,n//3):
         d = n//i
         w = v[:d*i].reshape(d,i)
@@ -68,15 +67,14 @@ def calc_bse_naive(rmsd_1d, path_bse):
     np.save(path_bse, l, allow_pickle = False)
     print("...>>> Done.")
 
-
-def calc_bse_alternate(rmsd_1d, path_bse):
+def calc_bse_alternate(path_rmsd, path_bse):
     """Returns a vector s(m) with the std-dev computed according to the Block Analysis method. The average is stable, needs more testing.
     Adapted from the script provided by professor Tubiana."""
 
     print(f">>> Preparing 'bse/{path_bse.name}'...")
 
-    v = rmsd_1d
-    n = len(rmsd_1d)
+    v = np.load(path_rmsd)[0]
+    n = len(v)
     a = []
     s = []
     for i in range(1,n//3):
@@ -100,24 +98,9 @@ def calc_bse_alternate(rmsd_1d, path_bse):
     s = np.asarray(s)
     s = np.sqrt(s)
     a = np.asarray(a)
-     #return a,s # a is the average, check that it is constant.
 
     np.save(path_bse, a, allow_pickle = False)
     print("...>>> Done.")
-
-
-def get_cov_matrix(size, length):
-    """Create a covariance matrix with a given correlation length.
-    Adapted from the script provided by professor Tubiana."""
-    x = np.arange(size)
-    cov = np.exp(-(1/length)*(x-np.atleast_2d(x).T)**2)
-    return cov
-
-
-def get_err_on_avg(cov_mat):
-    """Expected error on mean obtained from the covariance matrix of the random process generator.
-    Adapted from the script provided by professor Tubiana."""
-    return np.sqrt(cov_mat.mean())
 
 
 # ------------------------------------------------------------------------------ CLUSTERING

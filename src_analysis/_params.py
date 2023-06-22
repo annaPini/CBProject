@@ -9,12 +9,16 @@ RUN_PREFFIXES = ["mt1", "mt2", "wt1", "wt2"]
 RUNS = ["mt1_rep0", "mt1_rep1", "mt2_rep0", "mt2_rep1", "wt1_rep0", "wt1_rep1", "wt2_rep0", "wt2_rep1"]
 
 CLUSTERING_LINK_METHOD = "ward"
+COLOR_MAP_RMSD = "hsv"
+# COLOR_MAP_RMSD = "rainbow"
+# COLOR_MAP_RMSD = "prism"
 
 ####################################### DIRECTORIES
 
 DIR_DA = DIR_PROJECT / "data_analysis"
 DIR_DEXTRA = DIR_PROJECT / "data_extra"
 
+DIR_DA_COORDS = DIR_DA / "_coords"
 DIR_DA_TRAJECTORIES = DIR_DA / "_trajectories"
 DIR_DA_BSE = DIR_DA / "bse"
 DIR_DA_CLUSTERING = DIR_DA / "clustering"

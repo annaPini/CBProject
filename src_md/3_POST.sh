@@ -2,7 +2,7 @@
 
 mkdir ../data_analysis
 cd ../data_analysis
-mkdir _trajectories bse clustering pca pyinteraph rama rgyr rmsd rmsf sasa vmd wad
+mkdir _coords _trajectories bse clustering pca pyinteraph rama rgyr rmsd rmsf sasa vmd wad
 
 cd ../data_md
 for run in mt1_rep0 mt1_rep1 mt2_rep0 mt2_rep1 wt1_rep0 wt1_rep1 wt2_rep0 wt2_rep1
