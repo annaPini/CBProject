@@ -131,7 +131,7 @@ class RMSD_1D_WAD(RMSD_1D):
         self.rmsd_arr = self.rmsd_mat[ref_frame]
         frames = [int(f) for f in self.x[self.rmsd_arr <= rmsd_treshold]]
 
-        info = Info(DIR_DA_WAD / f"{CURRENT_RUN}-{ref_frame}-info.json")
+        info = Info(DIR_DA_WAD / f"{RUN_DETAILED_ANALYSIS}-{ref_frame}-info.json")
 
         info.update(
             rsmd_treshold = rmsd_treshold,
@@ -254,10 +254,10 @@ if __name__ == "__main__":
         rmsd_mat0 = np.load(PATH_RMSD0)
         rmsd_mat1 = np.load(PATH_RMSD1)
 
-        # rmsds.append(RMSD_2D(rmsd_mat0, title = run0))
-        # rmsds.append(RMSD_2D(rmsd_mat1, title = run1))
+        rmsds.append(RMSD_2D(rmsd_mat0, title = run0))
+        rmsds.append(RMSD_2D(rmsd_mat1, title = run1))
         rmsds.append(RMSD_1D_Compare(rmsd_mat0, rmsd_mat1, run_preffix, run0, run1))
-
+        break
 
     ############################################################################
 

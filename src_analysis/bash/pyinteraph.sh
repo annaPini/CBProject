@@ -1,4 +1,4 @@
-cd ../data_analysis/pyinteraph
+cd ../../data_analysis/pyinteraph
 
 PATH_GRO="../trajectories/mt2_rep0.gro"
 PATH_XTC="../trajectories/mt2_rep0.xtc"

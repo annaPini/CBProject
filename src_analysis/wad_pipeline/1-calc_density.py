@@ -65,8 +65,8 @@ def calc_water_density(traj, info):
 if __name__ == "__main__":
     info = Info(PATH_WAD_INFO)
 
-    PATH_GRO = DIR_DA_TRAJECTORIES / f"{CURRENT_RUN}.gro"
-    PATH_XTC = DIR_DA_TRAJECTORIES / f"{CURRENT_RUN}.xtc"
+    PATH_GRO = DIR_DA_TRAJECTORIES / f"{RUN_DETAILED_ANALYSIS}.gro"
+    PATH_XTC = DIR_DA_TRAJECTORIES / f"{RUN_DETAILED_ANALYSIS}.xtc"
 
     traj = mda.Universe(str(PATH_GRO), str(PATH_XTC))
 

@@ -57,8 +57,8 @@ pbc box\n"""
 if __name__ == "__main__":
     info = Info(PATH_WAD_INFO)
 
-    PATH_GRO = DIR_DA_TRAJECTORIES / f"{CURRENT_RUN}.gro"
-    PATH_XTC = DIR_DA_TRAJECTORIES / f"{CURRENT_RUN}.xtc"
+    PATH_GRO = DIR_DA_TRAJECTORIES / f"{RUN_DETAILED_ANALYSIS}.gro"
+    PATH_XTC = DIR_DA_TRAJECTORIES / f"{RUN_DETAILED_ANALYSIS}.xtc"
 
     PATH_WAD_GRO = DIR_DA_WAD / f"{WAD_NAME}.gro"
     PATH_WAD_XTC = DIR_DA_WAD / f"{WAD_NAME}.xtc"

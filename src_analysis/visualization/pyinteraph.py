@@ -79,7 +79,7 @@ if __name__ == "__main__":
     #     # cmap = "Greys"
     #     )
 
-    SB_GRAPH_ALL =  DIR_DA_PYINTERAPH / f"{CURRENT_RUN}-salt-bridges_all.csv"
+    SB_GRAPH_ALL =  DIR_DA_PYINTERAPH / f"{RUN_DETAILED_ANALYSIS}-salt-bridges_all.csv"
 
     ####################
     sb_mat, sb_atoms = get_reduced_matrix(SB_GRAPH_ALL)

@@ -8,9 +8,9 @@ import plotly.express as px
 
 
 ################################################################################
-PATH_PCA_SPACE  = DIR_DA_SPECIFIC / f"{CURRENT_RUN}-pca_space.npy"
-PATH_PCA_CUMVAR = DIR_DA_SPECIFIC / f"{CURRENT_RUN}-pca_cumvar.npy"
-PATH_PCA_PCOMPS = DIR_DA_SPECIFIC / f"{CURRENT_RUN}-pca_pcomponents.npy"
+PATH_PCA_SPACE  = DIR_DA_SPECIFIC / f"{RUN_DETAILED_ANALYSIS}-pca_space.npy"
+PATH_PCA_CUMVAR = DIR_DA_SPECIFIC / f"{RUN_DETAILED_ANALYSIS}-pca_cumvar.npy"
+PATH_PCA_PCOMPS = DIR_DA_SPECIFIC / f"{RUN_DETAILED_ANALYSIS}-pca_pcomponents.npy"
 
 
 ################################################################################

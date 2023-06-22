@@ -22,7 +22,6 @@ def plot_rama_ref(**kwargs):
         np.arange(-180, 180, 4)
     )
     levels = [1, 17, 15000]
-    # colors = ['#A1D4FF', '#35A1FF']
     colors = ['#888888', '#AAAAAA']
     ax.contourf(X, Y, np.load(Rama_ref), levels = levels, colors = colors)
     return ax
