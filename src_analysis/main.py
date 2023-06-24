@@ -41,17 +41,20 @@ def run_calculations():
 
 
 # -----------------------------------------------------------------------------
-def vis_bse(): # WIP
+def vis_bse():
     plotter = Plotter_BSE()
     for run_preffix in RUN_PREFFIXES:
         run0 = run_preffix + "_rep0"
+        run1 = run_preffix + "_rep1"
 
         plotter.vis_BSE(
-            bse_naive = np.load(DIR_DA_BSE / f"{run0}.naive.npy"),
-            bse_altern = np.load(DIR_DA_BSE / f"{run0}.altern.npy"),
+            bse_naive_0 = np.load(DIR_DA_BSE / f"{run0}.naive.npy"),
+            bse_altern_0 = np.load(DIR_DA_BSE / f"{run0}.altern.npy"),
+            bse_naive_1 = np.load(DIR_DA_BSE / f"{run1}.naive.npy"),
+            bse_altern_1 = np.load(DIR_DA_BSE / f"{run1}.altern.npy"),
             title = run_preffix,
             label0 = run0,
-            label1 = run0
+            label1 = run1
         )
 
 
@@ -64,7 +67,26 @@ def vis_cmap(): return
 
 
 # -----------------------------------------------------------------------------
-def vis_pca(): return
+def vis_pca(plotter_objs):
+    for run_preffix in RUN_PREFFIXES:
+        plotter_objs.append(Plotter_PCA())
+        run0 = run_preffix + "_rep0"
+
+        cumvar = np.load(DIR_DA_PCA / f"{run0}.cumvar.npy")
+        n_pcs = np.where(cumvar > 0.95)[0][0]
+        print("...>>> NPCS:", n_pcs)
+
+        ### Alternatively, can use the 'vis_1pca_plotly' method
+        ### With it, interaction with 3D scatter plot is faster
+        ### However, it opens several windows, so it's advised to use it for only 1 run
+
+        plotter_objs[-1].vis_1pca(
+            cumvar = cumvar,
+            space = np.load(DIR_DA_PCA / f"{run0}.space.npy"),
+            pcomps = np.load(DIR_DA_PCA / f"{run0}.pcomponents.npy"),
+            title = run_preffix
+        )
+
 
 
 # -----------------------------------------------------------------------------
@@ -141,10 +163,14 @@ if __name__ == "__main__":
         print("/// No visualizations requested, closing program...")
         exit()
 
+    ### must keep an active pointer of the plotter objects to avoid
+    ### garbage collector to dispose of them, which would break interactivity
+    ### i.e. functionality of widgets (sliders)
+    plotter_objs = []
     if args.bse: vis_bse()
     if args.cluster: vis_cluster()
     if args.cmap: vis_cmap()
-    if args.pca: vis_pca()
+    if args.pca: vis_pca(plotter_objs)
     if args.rama: vis_rama()
     if args.rgyr: vis_rgyr()
     if args.rmsd: vis_rmsd()

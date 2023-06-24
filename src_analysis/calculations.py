@@ -99,7 +99,11 @@ def calc_bse_alternate(path_rmsd, path_bse):
     s = np.sqrt(s)
     a = np.asarray(a)
 
-    np.save(path_bse, a, allow_pickle = False)
+    # a is the average, check that it is constant.
+    a -= np.mean(a)
+    print(f"...>>> BSE_Alternate: Average fluctuates by {np.max(np.abs(a)):.2e}.")
+
+    np.save(path_bse, s, allow_pickle = False)
     print("...>>> Done.")
 
 
