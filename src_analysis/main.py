@@ -59,7 +59,17 @@ def vis_bse():
 
 
 # -----------------------------------------------------------------------------
-def vis_cluster(): return
+def vis_cluster(plotter_objs):
+    for run_preffix in RUN_PREFFIXES:
+        plotter_objs.append(Plotter_RMSD1D_Clustering())
+        run0 = run_preffix + "_rep0"
+
+        plotter_objs[-1].vis_rmsd1d_clustering(
+            rmsd_mat0 = np.load(DIR_DA_RMSD / f"{run0}.npy"),
+            Z = np.load(DIR_DA_CLUSTERING / f"{run0}.link.npy"),
+            color_map = COLOR_MAP_RMSD,
+            title = run0
+        )
 
 
 # -----------------------------------------------------------------------------
@@ -109,7 +119,38 @@ def vis_rgyr():
 
 
 # -----------------------------------------------------------------------------
-def vis_rmsd(): return
+def vis_rmsd(plotter_objs):
+    #### RMSD 1D compare (intra comparisons)
+    #### RMSD 2D (memory intensive)
+    #### RMSD 1D wad --> WAD!
+    #### RMSD 1D compare (inter comparisons)
+
+    ############################################################################
+    for run_preffix in RUN_PREFFIXES:
+        run0 = run_preffix + "_rep0"
+        run1 = run_preffix + "_rep1"
+
+        rmsd_mat0 = np.load(DIR_DA_RMSD / f"{run0}.npy")
+        rmsd_mat1 = np.load(DIR_DA_RMSD / f"{run1}.npy")
+
+        plotter_rmsd2d = Plotter_RMSD2D()
+        plotter_rmsd2d.vis_rmsd2d(rmsd_mat0, title = run0)
+        plotter_rmsd2d.vis_rmsd2d(rmsd_mat1, title = run1)
+
+        plotter_objs.append(Plotter_RMSD1D())
+        plotter_objs[-1].vis_rmsd1d(rmsd_mat0, title = run0)
+
+        plotter_objs.append(Plotter_RMSD1D_Compare())
+        plotter_objs[-1].vis_rmsd1d(
+            rmsd_mat0, rmsd_mat1, run_preffix, run0, run1
+        )
+
+        plotter_objs.append(Plotter_RMSD1D_WAD()) # TODO move to WAD pipeline
+        plotter_objs[-1].vis_rmsd1d(rmsd_mat0, title = run0)
+
+        break
+
+    ############################################################################
 
 
 # -----------------------------------------------------------------------------
@@ -144,13 +185,13 @@ if __name__ == "__main__":
     parser.add_argument("-c", "--calc", action = "store_true", help = "description for calc")
     parser.add_argument("-b", "--bse", action = "store_true", help = "description...")
     parser.add_argument("-l", "--cluster", action = "store_true", help = "description...")
-    parser.add_argument("-m", "--cmap", action = "store_true", help = "description...")
+    parser.add_argument("-m", "--cmap", action = "store_true", help = "description... TODO")
     parser.add_argument("-p", "--pca", action = "store_true", help = "description...")
-    parser.add_argument("-a", "--rama", action = "store_true", help = "description...")
+    parser.add_argument("-a", "--rama", action = "store_true", help = "description... TODO")
     parser.add_argument("-g", "--rgyr", action = "store_true", help = "description...")
     parser.add_argument("-d", "--rmsd", action = "store_true", help = "description...")
     parser.add_argument("-f", "--rmsf", action = "store_true", help = "description...")
-    parser.add_argument("-s", "--sasa", action = "store_true", help = "description...")
+    parser.add_argument("-s", "--sasa", action = "store_true", help = "description... TODO")
     args = parser.parse_args()
 
     if args.calc: run_calculations()
@@ -168,12 +209,12 @@ if __name__ == "__main__":
     ### i.e. functionality of widgets (sliders)
     plotter_objs = []
     if args.bse: vis_bse()
-    if args.cluster: vis_cluster()
+    if args.cluster: vis_cluster(plotter_objs)
     if args.cmap: vis_cmap()
     if args.pca: vis_pca(plotter_objs)
     if args.rama: vis_rama()
     if args.rgyr: vis_rgyr()
-    if args.rmsd: vis_rmsd()
+    if args.rmsd: vis_rmsd(plotter_objs)
     if args.rmsf: vis_rmsf()
     if args.sasa: vis_sasa()
 
