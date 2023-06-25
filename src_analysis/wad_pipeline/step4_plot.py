@@ -1,4 +1,6 @@
-from parameters import *
+from wad_pipeline._params import *
+
+import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 
@@ -22,7 +24,7 @@ def load_vertices_faces(info):
 
     return vertices, faces
 
-def plot_layer(vertices, faces = None):
+def plot_layer(fig, vertices, faces = None):
     kwargs = dict(
         x = vertices[:,0],
         y = vertices[:,1],
@@ -39,7 +41,7 @@ def plot_layer(vertices, faces = None):
         go.Mesh3d(**kwargs)
     )
 
-def plot_density(info):
+def plot_density(fig, info):
     density = np.load(DIR_DA_WAD / f"{WAD_NAME}-wet_density.npy")
 
     X, Y, Z = np.mgrid[
@@ -63,24 +65,9 @@ def plot_density(info):
         )
     )
 
-def plot_protein(info):
+def plot_protein(fig, info):
     for v,f in zip(*load_vertices_faces(info)):
-        plot_layer(v, f)
+        plot_layer(fig, v, f)
+
 
 # //////////////////////////////////////////////////////////////////////////////
-if __name__ == "__main__":
-    info = Info(PATH_WAD_INFO)
-    fig = go.Figure()
-
-    plot_density(info)
-    plot_protein(info)
-
-    fig.update_layout(margin = dict(l = 0, r = 0, b = 0, t = 0))
-    fig.update_scenes(xaxis_visible = False, yaxis_visible = False, zaxis_visible = False, bgcolor = "rgb(0,0,50)")
-    fig.show()
-
-# //////////////////////////////////////////////////////////////////////////////
-
-# GREEN:    hydrophilic residues
-# YELLOW:   hydrophobic residues
-# RED:      active site

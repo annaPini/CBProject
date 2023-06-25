@@ -3,18 +3,17 @@ from pathlib import Path
 
 # ////////////////////////////////////////////////////////////////////////////// WAD PARAMETERS
 RUN_WAD = "mt2_rep0"
-WAD_REF_FRAME = 0
 WAD_DIVISIONS = 20
 WAD_DENSITY_TRESHOLD_LOWER = 0
 WAD_DENSITY_TRESHOLD_UPPER = 3
 
 ###########################################################
-DIR_DA = Path.cwd().parent.parent / "data_analysis"
+DIR_DA = Path.cwd().parent / "data_analysis"
 DIR_DA_TRAJECTORIES = DIR_DA / "_trajectories"
-DIR_DA_WAD = DIR_DA / "WAD"
+DIR_DA_WAD = DIR_DA / "wad"
 
-WAD_NAME = f"{RUN_WAD}-{WAD_REF_FRAME}"
-PATH_WAD_INFO = PATH DIR_DA_WAD / f"{WAD_NAME}-info.json"
+WAD_NAME = RUN_WAD
+PATH_WAD_INFO = DIR_DA_WAD / f"{WAD_NAME}-info.json"
 
 # ////////////////////////////////////////////////////////////////////////////// CONTAINER CLASS
 class Info:
@@ -27,6 +26,7 @@ class Info:
         else:
             print(f"--- '{self.path.name}' not found, will create new one.")
             self.info = {}
+
 
     def __getattr__(self, key):
         return self.__dict__.get(key, self.info[key])

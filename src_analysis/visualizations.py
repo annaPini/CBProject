@@ -46,74 +46,6 @@ class Plotter_BSE(Plotter):
         ax.legend()
 
 
-# ////////////////////////////////////////////////////////////////////////////// CLUSTERING
-class Plotter_RMSD1D_Clustering(Plotter_RMSD1D):
-    init_clustering_t = 900
-    label_criterion = "distance"
-
-    def vis_rmsd1d_clustering(self, rmsd_mat0, Z, color_map, title = ''):
-        self.Z = Z
-        self.color_map = color_map
-        self.highlight_cluster = False
-        self.update_values_cluster(self.init_clustering_t)
-
-        super().vis_rmsd1d(rmsd_mat0, title)
-        print(f"...>>> Clustering mode.")
-
-
-    def update_values_cluster(self, t):
-        self.cluster_mat = calc_cluster(self.Z, t, label_criterion = self.label_criterion)
-        self.n_clusters = np.max(self.cluster_mat)
-        self.cluster_colors = cm.__dict__[self.color_map](np.linspace(0, 1, self.n_clusters))
-
-    # --------------------------------------------------------------------------
-    def init_axes(self):
-        self.fig = plt.figure(layout = "constrained")
-        self.ax_dict = self.fig.subplot_mosaic("aaaa;aaaa;aaaa;aaaa;aaaa;aaaa;bbbd;cccd")
-
-    def init_widgets(self):
-        super().init_widgets()
-
-        self.slid_clustering_t = Slider(
-            ax = self.ax_dict['c'],
-            label = "t value", color = "blue",
-            valstep = 25, valinit = self.init_clustering_t,
-            valmin = 25, valmax = 2000,
-            valfmt = "%04i"
-        )
-        self.slid_clustering_t.on_changed(self.update_clustering_t)
-
-        self.button_toggle_alpha = Button(
-            ax = self.ax_dict['d'],
-            label = f"{self.n_clusters} clusters"
-        )
-        self.button_toggle_alpha.on_clicked(self.toggle_alpha)
-
-    # --------------------------------------------------------------------------
-    def update_clustering_t(self, clustering_t):
-        self.update_values_cluster(clustering_t)
-        self.button_toggle_alpha.label.set_text(f"{self.n_clusters} clusters")
-        self.update_plot(self.slid_ref_frame.val)
-
-    def toggle_alpha(self, event):
-        self.highlight_cluster = not self.highlight_cluster
-        self.ax_dict['a'].set_facecolor((0, 0, 0) if self.highlight_cluster else (1, 1, 1))
-        self.fig.canvas.draw_idle()
-        self.update_plot(self.slid_ref_frame.val)
-
-    def update_values(self, ref_frame):
-        self.rmsd_arr0 = self.rmsd_mat0[ref_frame]
-        current_cluster = self.cluster_mat[ref_frame]
-
-        for i,color in enumerate(self.cluster_colors[:,:]):
-            r,g,b,a = color
-            if (i + 1 != current_cluster) and self.highlight_cluster:
-                a = .1
-            self.colors[self.cluster_mat == i + 1] = r,g,b,a
-
-    # --------------------------------------------------------------------------
-
-
 # ////////////////////////////////////////////////////////////////////////////// CMAP
 class Plotter_CMAP(Plotter): pass
 
@@ -312,83 +244,73 @@ class Plotter_RMSD1D_Compare(Plotter_RMSD1D):
         self.update_line_data(self.line_rmsd1, self.x, self.rmsd_arr1)
 
 
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ CLUSTERING
+class Plotter_RMSD1D_Clustering(Plotter_RMSD1D):
+    init_clustering_t = 900
+    label_criterion = "distance"
 
+    def vis_rmsd1d_clustering(self, rmsd_mat0, Z, color_map, title = ''):
+        self.Z = Z
+        self.color_map = color_map
+        self.highlight_cluster = False
+        self.update_values_cluster(self.init_clustering_t)
 
-# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-class Plotter_RMSD1D_WAD(Plotter_RMSD1D): # TODO move to WAD pipeline
-    init_rmsd_treshold = 2
-
-    def vis_rmsd1d(self, rmsd_mat0, title = ''):
-        self.y = np.zeros(rmsd_mat0.shape[0])
         super().vis_rmsd1d(rmsd_mat0, title)
-        print(f"...>>> WAD frame selection mode.")
+        print(f"...>>> Clustering mode.")
 
+
+    def update_values_cluster(self, t):
+        self.cluster_mat = calc_cluster(self.Z, t, label_criterion = self.label_criterion)
+        self.n_clusters = np.max(self.cluster_mat)
+        self.cluster_colors = cm.__dict__[self.color_map](np.linspace(0, 1, self.n_clusters))
+
+    # --------------------------------------------------------------------------
     def init_axes(self):
         self.fig = plt.figure(layout = "constrained")
         self.ax_dict = self.fig.subplot_mosaic("aaaa;aaaa;aaaa;aaaa;aaaa;aaaa;bbbd;cccd")
 
-    def init_plot(self):
-        super().init_plot()
-        self.line_treshold = self.ax_dict['a'].plot(self.x, self.y)
-
     def init_widgets(self):
         super().init_widgets()
 
-        self.slid_rmsd_treshold = Slider(
+        self.slid_clustering_t = Slider(
             ax = self.ax_dict['c'],
-            label = "rmsd_treshold", color = "blue",
-            valstep = .05, valinit = self.init_rmsd_treshold,
-            valmin = 0, valmax = np.max(self.rmsd_mat0),
-            valfmt = "%02.2f"
+            label = "t value", color = "blue",
+            valstep = 25, valinit = self.init_clustering_t,
+            valmin = 25, valmax = 2000,
+            valfmt = "%04i"
         )
-        self.slid_rmsd_treshold.on_changed(self.update_plot)
+        self.slid_clustering_t.on_changed(self.update_clustering_t)
 
-        self.button_save = Button(
+        self.button_toggle_alpha = Button(
             ax = self.ax_dict['d'],
-            label = "Save WA frames"
+            label = f"{self.n_clusters} clusters"
         )
-        self.button_save.on_clicked(self.save_selected_frames)
-
-
-    def update_plot(self, val):
-        self.update_values(self.slid_ref_frame.val, self.slid_rmsd_treshold.val)
-        self.update_line_rmsd()
-        self.update_line_treshold()
-
-    def update_values(self, ref_frame, rmsd_treshold = None):
-        if rmsd_treshold is None:
-            rmsd_treshold = self.init_rmsd_treshold
-
-        self.rmsd_arr0 = self.rmsd_mat0[ref_frame]
-
-        self.colors[:] = BLUE
-        self.colors[self.rmsd_arr0 <= rmsd_treshold] = GREEN
-        self.colors[ref_frame] = RED
-
-        self.y[:] = rmsd_treshold
+        self.button_toggle_alpha.on_clicked(self.toggle_alpha)
 
     # --------------------------------------------------------------------------
-    def update_line_treshold(self):
-        self.line_treshold[0].set_data(self.x, self.y)
+    def update_clustering_t(self, clustering_t):
+        self.update_values_cluster(clustering_t)
+        self.button_toggle_alpha.label.set_text(f"{self.n_clusters} clusters")
+        self.update_plot(self.slid_ref_frame.val)
+
+    def toggle_alpha(self, event):
+        self.highlight_cluster = not self.highlight_cluster
+        self.ax_dict['a'].set_facecolor((0, 0, 0) if self.highlight_cluster else (1, 1, 1))
+        self.fig.canvas.draw_idle()
+        self.update_plot(self.slid_ref_frame.val)
+
+    def update_values(self, ref_frame):
+        self.rmsd_arr0 = self.rmsd_mat0[ref_frame]
+        current_cluster = self.cluster_mat[ref_frame]
+
+        for i,color in enumerate(self.cluster_colors[:,:]):
+            r,g,b,a = color
+            if (i + 1 != current_cluster) and self.highlight_cluster:
+                a = .1
+            self.colors[self.cluster_mat == i + 1] = r,g,b,a
 
     # --------------------------------------------------------------------------
-    def save_selected_frames(self, event):
-        ref_frame = self.slid_ref_frame.val
-        rmsd_treshold = self.slid_rmsd_treshold.val
 
-        self.rmsd_arr0 = self.rmsd_mat0[ref_frame]
-        frames = [int(f) for f in self.x[self.rmsd_arr0 <= rmsd_treshold]]
-
-        info = Info(DIR_DA_WAD / f"{RUN_DETAILED_ANALYSIS}-{ref_frame}-info.json")
-
-        info.update(
-            rsmd_treshold = rmsd_treshold,
-            ref_frame = ref_frame,
-            ref_frame_index = frames.index(ref_frame),
-            frames = frames,
-        )
-
-        self.button_save.label.set_text(f"Saved {len(frames)} frames")
 
 
 # ////////////////////////////////////////////////////////////////////////////// RMSF
@@ -414,9 +336,10 @@ class Plotter_RMSF(Plotter):
         ax.legend()
 
 
-
 # ////////////////////////////////////////////////////////////////////////////// SASA
 class Plotter_SASA(Plotter): pass
+
+
 
 
 # //////////////////////////////////////////////////////////////////////////////

@@ -2,6 +2,8 @@ import argparse
 from _params import *
 from calculations import *
 from visualizations import *
+from documentation import docs_main
+from argparse import RawDescriptionHelpFormatter
 
 # //////////////////////////////////////////////////////////////////////////////
 def run_calculations():
@@ -145,9 +147,6 @@ def vis_rmsd(plotter_objs):
             rmsd_mat0, rmsd_mat1, run_preffix, run0, run1
         )
 
-        plotter_objs.append(Plotter_RMSD1D_WAD()) # TODO move to WAD pipeline
-        plotter_objs[-1].vis_rmsd1d(rmsd_mat0, title = run0)
-
         break
 
     ############################################################################
@@ -181,22 +180,28 @@ def vis_sasa(): return
 
 # //////////////////////////////////////////////////////////////////////////////
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description = "Description for program")
-    parser.add_argument("-c", "--calc", action = "store_true", help = "description for calc")
-    parser.add_argument("-b", "--bse", action = "store_true", help = "description...")
-    parser.add_argument("-l", "--cluster", action = "store_true", help = "description...")
-    parser.add_argument("-m", "--cmap", action = "store_true", help = "description... TODO")
-    parser.add_argument("-p", "--pca", action = "store_true", help = "description...")
-    parser.add_argument("-a", "--rama", action = "store_true", help = "description... TODO")
-    parser.add_argument("-g", "--rgyr", action = "store_true", help = "description...")
-    parser.add_argument("-d", "--rmsd", action = "store_true", help = "description...")
-    parser.add_argument("-f", "--rmsf", action = "store_true", help = "description...")
-    parser.add_argument("-s", "--sasa", action = "store_true", help = "description... TODO")
+    parser = argparse.ArgumentParser(description = docs_main["main"], formatter_class = RawDescriptionHelpFormatter)
+    parser.add_argument("-c", "--calc", action = "store_true", help = docs_main["calc"])
+    parser.add_argument("-b", "--bse", action = "store_true", help = docs_main["bse"])
+    parser.add_argument("-l", "--cluster", action = "store_true", help = docs_main["cluster"])
+    parser.add_argument("-m", "--cmap", action = "store_true", help = docs_main["cmap"])
+    parser.add_argument("-p", "--pca", action = "store_true", help = docs_main["pca"])
+    parser.add_argument("-a", "--rama", action = "store_true", help = docs_main["rama"])
+    parser.add_argument("-g", "--rgyr", action = "store_true", help = docs_main["rgyr"])
+    parser.add_argument("-d", "--rmsd", action = "store_true", help = docs_main["rmsd"])
+    parser.add_argument("-f", "--rmsf", action = "store_true", help = docs_main["rmsf"])
+    parser.add_argument("-s", "--sasa", action = "store_true", help = docs_main["sasa"])
     args = parser.parse_args()
+
+    plot_requested = args.bse | args.cluster | args.cmap | args.pca | args.rama | args.rgyr | args. rmsd | args.rmsf | args.sasa
+
+    if not (args.calc | plot_requested):
+        print(">>> Refer to the documentation (main.py -h) for description of usage. Closing...")
+        exit()
 
     if args.calc: run_calculations()
 
-    if (args.bse | args.cluster | args.cmap | args.pca | args.rama | args.rgyr | args. rmsd | args.rmsf | args.sasa):
+    if plot_requested:
         if not any(DIR_DA_COORDS.iterdir()):
             print("xxx Visualization(s) requested, but it seems calculations haven't been perform yet (_coords folder empty). Aborting...")
             exit()
