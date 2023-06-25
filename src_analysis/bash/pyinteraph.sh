@@ -1,8 +1,8 @@
 cd ../../data_analysis/pyinteraph
 
-PATH_GRO="../trajectories/mt2_rep0.gro"
-PATH_XTC="../trajectories/mt2_rep0.xtc"
-PATH_TPR="../trajectories/mt2_rep0.tpr"
+PATH_GRO="../_trajectories/mt2_rep0.gro"
+PATH_XTC="../_trajectories/mt2_rep0.xtc"
+PATH_TPR="../_trajectories/mt2_rep0.tpr"
 
 ###################
 ### salt bridges

@@ -1,5 +1,6 @@
-from parameters import *
-from calculate_general import calc_cmap, calc_cmap_AS
+from _params import *
+from calculations import calc_cmap, calc_cmap_AS
+import numpy as np
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -138,7 +139,7 @@ def plot_cmap_AS(coords_AS):
     interactions = ["AB", "CD", "EF", "FG", "EG", "GH", "IJ"]
 
     df = pd.DataFrame(columns = ["system", "interaction", "distance"])
-    print (f">>> Calculating CMAPs...")
+    print(f">>> Calculating CMAPs...")
 
     for system,coords in coords_AS.items():
 
@@ -152,19 +153,8 @@ def plot_cmap_AS(coords_AS):
 
 
     print (f">>> Plotting...")
-    # # sns.catplot(data = df, x = "interaction", y = "distance", hue = "system", kind = "boxen")
-    # sns.boxplot(data = df, x = "interaction", y = "distance", hue = "system")
-    # sns.catplot(data = df, x = "interaction", y = "distance", hue = "system", kind = "point")
-    # plt.show(block = True)
-
-    # sns.catplot(data = df, x = "interaction", y = "distance", hue = "system", kind = "boxen", ax = ax)
-    # sns.catplot(data = df, x = "interaction", y = "distance", hue = "system", kind = "point", ax = ax)
-    #
-
     # sns.boxplot(data = df, x = "interaction", y = "distance", hue = "system", ax = ax)
     sns.pointplot(data = df, x = "interaction", y = "distance", hue = "system", ax = ax)
-
-
     plt.show(block = True)
 
 
@@ -172,43 +162,51 @@ def plot_cmap_AS(coords_AS):
 
 # //////////////////////////////////////////////////////////////////////////////
 if __name__ == "__main__":
+    #### focus the analysis on just repetition 0
+    coords_mt1 = np.load(DIR_DA_COORDS / f"mt1_rep0.npy")
+    coords_mt2 = np.load(DIR_DA_COORDS / f"mt2_rep0.npy")
+    coords_wt2 = np.load(DIR_DA_COORDS / f"wt2_rep0.npy")
 
-    rep = 1
-
-    coords_mt1 = np.load(DIR_DA_TRAJECTORIES / f"mt1_rep{rep}-coords.npy")
-    coords_mt2 = np.load(DIR_DA_TRAJECTORIES / f"mt2_rep{rep}-coords.npy")
-    coords_wt2 = np.load(DIR_DA_TRAJECTORIES / f"wt2_rep{rep}-coords.npy")
-
-    active_sites = {
-        "mt1_as0" : np.load(DIR_DA_SPECIFIC / f"mt1_rep{rep}-AS_coords.npy"),
-        "mt2_as0" : np.load(DIR_DA_SPECIFIC / f"mt2_rep{rep}-AS_coords.npy"),
-        "mt2_as1" : np.load(DIR_DA_SPECIFIC / f"mt2_rep{rep}-AS_coords1.npy"),
-        "wt1_as0" : np.load(DIR_DA_SPECIFIC / f"wt1_rep{rep}-AS_coords.npy"),
-        "wt2_as0" : np.load(DIR_DA_SPECIFIC / f"wt2_rep{rep}-AS_coords.npy"),
-        "wt2_as1" : np.load(DIR_DA_SPECIFIC / f"wt2_rep{rep}-AS_coords1.npy"),
-    }
-
-    # --------------------------------------------------------------------------
+    # -------------------------------------------------------------------------- GENERAL ANALYSIS
     # CMAP_Basic(coords_mt1, "mt1_rep0").base_cmap(frame = 0)
     # CMAP_Basic(coords_mt2, "mt2_rep0").base_cmap(frame = 0)
 
-    # --------------------------------------------------------------------------
+    # -------------------------------------------------------------------------- SPECIFIC ANALYSIS PART 1
+    # # ### Observe how CMAP values change in time
+    # # cmi = Dynamic_CMAP(coords_mt2, "mt2_rep0")
+    # #
+    # # ### Compare change of CMAP values from one frame relative to another reference frame
+    # # cmdiff = DCMD_1mol_2frames(coords_mt2, "mt2_rep0")
+    #
+    # ### Same as before but limiting the frames to a time section of interest
+    # cmdiff_a = DCMD_1mol_2frames(coords_wt2, "mt2_rep0", min_frame = 4000, max_frame = 6000)
+    #
+    # ### Instead of comparing two frames from the same trajectory, compare the same frame in different trajetories
+    # cmdiff_b = DCMD_2mol_1frame(coords_mt2, coords_wt2, "mt2 vs wt2", min_frame = 4000, max_frame = 6000)
+
+    # -------------------------------------------------------------------------- SPECIFIC ANALYSIS PART 2
     # frame_before = 5472
     # frame_during = 5510
     # frame_after = 5692
     #
+    # ### Compare change of CMAP values between two frames (fixed)
     # CMAP_Basic(coords_mt2, "Before and during").diff_cmap(frame_before, frame_during)
     # CMAP_Basic(coords_mt2, "During and After").diff_cmap(frame_during, frame_after)
     # CMAP_Basic(coords_mt2, "Before and After").diff_cmap(frame_before, frame_after)
 
-    # --------------------------------------------------------------------------
-    # # cmi = Dynamic_CMAP(coords_mt2, "mt2_rep0")
-    # # cmdiff = DCMD_1mol_2frames(coords_mt2, "mt2_rep0")
-    # cmdiff_a = DCMD_1mol_2frames(coords_wt2, "mt2_rep0", min_frame = 4000, max_frame = 6000)
-    # cmdiff_b = DCMD_2mol_1frame(coords_mt2, coords_wt2, "mt2 vs wt2", min_frame = 4000, max_frame = 6000)
+    # -------------------------------------------------------------------------- SPECIFIC ANALYSIS ACTIVE SITE
+    # rep = 0
+    rep = 1
+    active_sites = {
+        "mt1_as0" : np.load(DIR_DA_COORDS / f"mt1_rep{rep}-AS0.npy"),
+        "mt2_as0" : np.load(DIR_DA_COORDS / f"mt2_rep{rep}-AS0.npy"),
+        "mt2_as1" : np.load(DIR_DA_COORDS / f"mt2_rep{rep}-AS1.npy"),
+        "wt1_as0" : np.load(DIR_DA_COORDS / f"wt1_rep{rep}-AS0.npy"),
+        "wt2_as0" : np.load(DIR_DA_COORDS / f"wt2_rep{rep}-AS0.npy"),
+        "wt2_as1" : np.load(DIR_DA_COORDS / f"wt2_rep{rep}-AS1.npy"),
+    }
 
-    # --------------------------------------------------------------------------
-    # plot_cmap_AS(active_sites)
+    plot_cmap_AS(active_sites)
 
     # --------------------------------------------------------------------------
     plt.show()

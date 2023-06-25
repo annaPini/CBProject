@@ -1,7 +1,7 @@
 import pandas as pd
 from matplotlib import pyplot as plt
 import numpy as np
-from parameters import *
+from _params import *
 
 def get_full_matrix(path_full_matrix):
     return np.genfromtxt(path_full_matrix)

@@ -42,7 +42,7 @@ def run_calculations():
         if not PATH_BSE_ALTERN.exists(): calc_bse_alternate(PATH_RMSD, PATH_BSE_ALTERN)
 
 
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 def vis_bse():
     plotter = Plotter_BSE()
     for run_preffix in RUN_PREFFIXES:
@@ -60,7 +60,7 @@ def vis_bse():
         )
 
 
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 def vis_cluster(plotter_objs):
     for run_preffix in RUN_PREFFIXES:
         plotter_objs.append(Plotter_RMSD1D_Clustering())
@@ -74,11 +74,19 @@ def vis_cluster(plotter_objs):
         )
 
 
-# -----------------------------------------------------------------------------
-def vis_cmap(): return
+# ------------------------------------------------------------------------------
+def vis_cmap0(): print("placeholder cmap0")
 
 
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+def vis_cmap1(): print("placeholder cmap1")
+
+
+# ------------------------------------------------------------------------------
+def vis_cmap2(): print("placeholder cmap2")
+
+
+# ------------------------------------------------------------------------------
 def vis_pca(plotter_objs):
     for run_preffix in RUN_PREFFIXES:
         plotter_objs.append(Plotter_PCA())
@@ -100,12 +108,27 @@ def vis_pca(plotter_objs):
         )
 
 
+# ------------------------------------------------------------------------------
+def vis_pyinteraph(): print("placeholder pyinteraph")
 
-# -----------------------------------------------------------------------------
-def vis_rama(): return
+
+# ------------------------------------------------------------------------------
+def vis_rama(plotter_objs):
+    for run_preffix in RUN_PREFFIXES:
+        plotter_objs.append(Plotter_RAMA())
+        run0 = run_preffix + "_rep0"
+        run1 = run_preffix + "_rep1"
+
+        plotter_objs[-1].vis_2rama(
+            rama0 = np.load(DIR_DA_RAMA / f"{run0}.npy"),
+            rama1 = np.load(DIR_DA_RAMA / f"{run1}.npy"),
+            title = run_preffix,
+            label0 = run0,
+            label1 = run1
+        )
 
 
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 def vis_rgyr():
     plotter = Plotter_RGYR()
     for run_preffix in RUN_PREFFIXES:
@@ -120,14 +143,10 @@ def vis_rgyr():
         )
 
 
-# -----------------------------------------------------------------------------
-def vis_rmsd(plotter_objs):
-    #### RMSD 1D compare (intra comparisons)
-    #### RMSD 2D (memory intensive)
-    #### RMSD 1D wad --> WAD!
-    #### RMSD 1D compare (inter comparisons)
+# ------------------------------------------------------------------------------
+def vis_rmsd0(plotter_objs):
+    """RMSD 2D (memory intensive)"""
 
-    ############################################################################
     for run_preffix in RUN_PREFFIXES:
         run0 = run_preffix + "_rep0"
         run1 = run_preffix + "_rep1"
@@ -139,24 +158,63 @@ def vis_rmsd(plotter_objs):
         plotter_rmsd2d.vis_rmsd2d(rmsd_mat0, title = run0)
         plotter_rmsd2d.vis_rmsd2d(rmsd_mat1, title = run1)
 
-        plotter_objs.append(Plotter_RMSD1D())
-        plotter_objs[-1].vis_rmsd1d(rmsd_mat0, title = run0)
+
+# ------------------------------------------------------------------------------
+def vis_rmsd1(plotter_objs):
+    """RMSD 1D compare (intra comparisons)"""
+
+    for run_preffix in RUN_PREFFIXES:
+        run0 = run_preffix + "_rep0"
+        run1 = run_preffix + "_rep1"
+
+        rmsd_mat0 = np.load(DIR_DA_RMSD / f"{run0}.npy")
+        rmsd_mat1 = np.load(DIR_DA_RMSD / f"{run1}.npy")
 
         plotter_objs.append(Plotter_RMSD1D_Compare())
         plotter_objs[-1].vis_rmsd1d(
             rmsd_mat0, rmsd_mat1, run_preffix, run0, run1
         )
 
-        break
 
-    ############################################################################
+# ------------------------------------------------------------------------------
+def vis_rmsd2(plotter_objs):
+    """RMSD 1D compare (inter comparisons)"""
+
+    for run_preffix in RUN_PREFFIXES:
+        run0 = run_preffix + "_rep0"
+        run1 = run_preffix + "_rep1"
+
+        rmsd_mat0 = np.load(DIR_DA_RMSD / f"{run0}.npy")
+        rmsd_mat1 = np.load(DIR_DA_RMSD / f"{run1}.npy")
+
+        # WIP... (placeholder)
+        plotter_objs.append(Plotter_RMSD1D())
+        plotter_objs[-1].vis_rmsd1d(rmsd_mat0, title = run0)
 
 
-# -----------------------------------------------------------------------------
-def vis_rmsf():
+# ------------------------------------------------------------------------------
+def vis_rmsf0():
+    """RMSF 1D compare (intra comparisons)"""
+
+    plotter = Plotter_RMSF()
+    for run_preffix in RUN_PREFFIXES:
+        run0 = run_preffix + "_rep0"
+        run1 = run_preffix + "_rep1"
+
+        plotter.vis_2rmsf(
+            rmsf0 = np.load(DIR_DA_RMSF / f"{run0}.npy"),
+            rmsf1 = np.load(DIR_DA_RMSF / f"{run1}.npy"),
+            title = run0[:3] if (run0[:3] == run1[:3]) else f"{run0} vs {run1}",
+            label0 = run0,
+            label1 = run1
+        )
+
+
+# ------------------------------------------------------------------------------
+def vis_rmsf1():
+    """RMSF 1D compare (inter comparisons)"""
+
     comparisons = [
-        (run_preffix + "_rep0", run_preffix + "_rep1") for run_preffix in RUN_PREFFIXES
-    ] + [
         ("mt2_rep0", "wt2_rep0"),
         ("mt1_rep0", "mt2_rep0"),
         ("wt1_rep0", "wt2_rep0"),
@@ -174,8 +232,8 @@ def vis_rmsf():
         )
 
 
-# -----------------------------------------------------------------------------
-def vis_sasa(): return
+# ------------------------------------------------------------------------------
+def vis_sasa(): print("placeholder sasa")
 
 
 # //////////////////////////////////////////////////////////////////////////////
@@ -184,16 +242,24 @@ if __name__ == "__main__":
     parser.add_argument("-c", "--calc", action = "store_true", help = docs_main["calc"])
     parser.add_argument("-b", "--bse", action = "store_true", help = docs_main["bse"])
     parser.add_argument("-l", "--cluster", action = "store_true", help = docs_main["cluster"])
-    parser.add_argument("-m", "--cmap", action = "store_true", help = docs_main["cmap"])
+    parser.add_argument("-m0", "--cmap0", action = "store_true", help = docs_main["cmap"]) # TODO GENERAL ANALYSIS
+    parser.add_argument("-m1", "--cmap1", action = "store_true", help = docs_main["cmap"]) # TODO SPECIFIC ANALYSIS
+    parser.add_argument("-m2", "--cmap2", action = "store_true", help = docs_main["cmap"]) # TODO SPECIFIC ANALYSIS ACTIVE SITE
     parser.add_argument("-p", "--pca", action = "store_true", help = docs_main["pca"])
+    parser.add_argument("-y", "--pyinteraph", action = "store_true", help = docs_main["pyinteraph"]) # TODO
     parser.add_argument("-a", "--rama", action = "store_true", help = docs_main["rama"])
     parser.add_argument("-g", "--rgyr", action = "store_true", help = docs_main["rgyr"])
-    parser.add_argument("-d", "--rmsd", action = "store_true", help = docs_main["rmsd"])
-    parser.add_argument("-f", "--rmsf", action = "store_true", help = docs_main["rmsf"])
-    parser.add_argument("-s", "--sasa", action = "store_true", help = docs_main["sasa"])
+    parser.add_argument("-d0", "--rmsd0", action = "store_true", help = docs_main["rmsd"]) # 2D
+    parser.add_argument("-d1", "--rmsd1", action = "store_true", help = docs_main["rmsd"]) # 1D COMPARE INTRA
+    parser.add_argument("-d2", "--rmsd2", action = "store_true", help = docs_main["rmsd"]) # 1D COMPARE INTER
+    parser.add_argument("-f0", "--rmsf0", action = "store_true", help = docs_main["rmsf"]) # COMPARE INTRA
+    parser.add_argument("-f1", "--rmsf1", action = "store_true", help = docs_main["rmsf"]) # COMPARE INTER
+    parser.add_argument("-s", "--sasa", action = "store_true", help = docs_main["sasa"]) # TODO
     args = parser.parse_args()
 
-    plot_requested = args.bse | args.cluster | args.cmap | args.pca | args.rama | args.rgyr | args. rmsd | args.rmsf | args.sasa
+    plot_flags = {**vars(args)}
+    plot_flags.pop("calc")
+    plot_requested = any(plot_flags.values())
 
     if not (args.calc | plot_requested):
         print(">>> Refer to the documentation (main.py -h) for description of usage. Closing...")
@@ -215,12 +281,18 @@ if __name__ == "__main__":
     plotter_objs = []
     if args.bse: vis_bse()
     if args.cluster: vis_cluster(plotter_objs)
-    if args.cmap: vis_cmap()
+    if args.cmap0: vis_cmap0()
+    if args.cmap1: vis_cmap1()
+    if args.cmap2: vis_cmap2()
     if args.pca: vis_pca(plotter_objs)
-    if args.rama: vis_rama()
+    if args.pyinteraph: vis_pyinteraph()
+    if args.rama: vis_rama(plotter_objs)
     if args.rgyr: vis_rgyr()
-    if args.rmsd: vis_rmsd(plotter_objs)
-    if args.rmsf: vis_rmsf()
+    if args.rmsd0: vis_rmsd0(plotter_objs)
+    if args.rmsd1: vis_rmsd1(plotter_objs)
+    if args.rmsd2: vis_rmsd2(plotter_objs)
+    if args.rmsf0: vis_rmsf0()
+    if args.rmsf1: vis_rmsf1()
     if args.sasa: vis_sasa()
 
     plt.show()

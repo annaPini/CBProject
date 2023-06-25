@@ -3,8 +3,10 @@ from calculations import calc_cluster
 
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.widgets import Slider, Button
 from matplotlib.pyplot import cm
+from matplotlib.widgets import Slider, Button
+
+from MDAnalysis.analysis.data.filenames import Rama_ref
 
 # //////////////////////////////////////////////////////////////////////////////
 class Plotter:
@@ -13,6 +15,7 @@ class Plotter:
         ax.set_xlabel(xlabel, fontdict = dict(fontsize = 16))
         ax.set_ylabel(ylabel, fontdict = dict(fontsize = 16))
         ax.tick_params(labelsize = 12)
+
 
     def plot_scatter(self, ax, x, y, colors, marker = '.'):
         line = ax.scatter(x, y, c = colors, marker = marker)
@@ -52,9 +55,6 @@ class Plotter_CMAP(Plotter): pass
 
 # ////////////////////////////////////////////////////////////////////////////// PCA
 class Plotter_PCA(Plotter):
-    def update_plot(self, idx):
-        self.update_line_data(self.line_2d, self.x, self.pcomps[idx])
-
     def vis_1pca(self, cumvar, space, pcomps, title = ''):
         print(f">>> Plotting PCA for '{title}'...")
 
@@ -97,6 +97,10 @@ class Plotter_PCA(Plotter):
         ax_3d.legend(*sc.legend_elements(), loc = "lower left")
 
 
+    def update_plot(self, idx):
+        self.update_line_data(self.line_2d, self.x, self.pcomps[idx])
+
+
     def vis_1pca_plotly(self, cumvar, space, pcomps, title = ''):
         import pandas as pd
         import plotly.express as px
@@ -134,7 +138,81 @@ class Plotter_Pyinteraph(Plotter): pass
 
 
 # ////////////////////////////////////////////////////////////////////////////// RAMA
-class Plotter_RAMA(Plotter): pass
+class Plotter_RAMA(Plotter):
+    def vis_2rama(self, rama0, rama1, title = '', label0 = '', label1 = ''):
+        print(f">>> Plotting RAMA for '{title}'...")
+
+        ##### DATA
+        self.rama_mat0 = rama0
+        self.rama_mat1 = rama1
+
+        ##### FIGURES CREATION
+        self.init_axes()
+        self.stylize_ax(self.ax_dict['a'], title, r"$\phi$", r"$\psi$")
+
+        ##### PLOTTING
+        self.init_plots(label0, label1)
+
+        ##### WIDGETS
+        self.init_widgets()
+
+
+    def init_axes(self):
+        fig = plt.figure(layout = "constrained")
+        self.ax_dict = fig.subplot_mosaic("a;a;a;a;a;a;b")
+
+        #### Rama ax formatting, adapted from "MDAnalysis/analysis/dihedrals.Ramachandran.plot"
+        self.ax_dict['a'].set_facecolor((0,0,0,1))
+        self.ax_dict['a'].axis([-180, 180, -180, 180])
+        self.ax_dict['a'].axhline(0, color = 'w', lw = 1)
+        self.ax_dict['a'].axvline(0, color = 'w', lw = 1)
+        self.ax_dict['a'].set(xticks = range(-180, 181, 60), yticks = range(-180, 181, 60))
+
+        degree_formatter = plt.matplotlib.ticker.StrMethodFormatter("{x:g}°")
+        self.ax_dict['a'].xaxis.set_major_formatter(degree_formatter)
+        self.ax_dict['a'].yaxis.set_major_formatter(degree_formatter)
+
+
+    def init_plots(self, label0, label1):
+        #### Reference Rama plot, adapted from "MDAnalysis/analysis/dihedrals.Ramachandran.plot"
+        X, Y = np.meshgrid(
+            np.arange(-180, 180, 4),
+            np.arange(-180, 180, 4)
+        )
+        levels = [1, 17, 15000]
+        colors = ['#888888', '#AAAAAA']
+        self.ax_dict['a'].contourf(X, Y, np.load(Rama_ref), levels = levels, colors = colors)
+
+
+        #### Observed Rama values
+        rama_arr0 = self.rama_mat0[0].reshape(self.rama_mat0.shape[1], 2)
+        rama_arr1 = self.rama_mat1[0].reshape(self.rama_mat1.shape[1], 2)
+
+        self.line_rama0 = self.ax_dict['a'].scatter(
+            rama_arr0[:,0], rama_arr0[:,1], color = HALF_RED,  marker = 'x', s = 20, label = label0
+        )
+        self.line_rama1 = self.ax_dict['a'].scatter(
+            rama_arr1[:,0], rama_arr1[:,1], color = HALF_BLUE, marker = '+', s = 20, label = label1
+        )
+        self.ax_dict['a'].legend(loc = "upper right")
+
+
+    def init_widgets(self):
+        self.slid_ref_frame = Slider(
+            ax = self.ax_dict['b'],
+            label = "ref_frame", color = "orange",
+            valstep = 1, valinit = 0,
+            valmin = 0, valmax = self.rama_mat0.shape[0] - 1,
+            valfmt = "%04i"
+        )
+        self.slid_ref_frame.on_changed(self.update_plot)
+
+
+    def update_plot(self, ref_frame):
+        rama_arr0 = self.rama_mat0[ref_frame]
+        rama_arr1 = self.rama_mat1[ref_frame]
+        self.update_line_data(self.line_rama0, rama_arr0[:,0], rama_arr0[:,1])
+        self.update_line_data(self.line_rama1, rama_arr1[:,0], rama_arr1[:,1])
 
 
 # ////////////////////////////////////////////////////////////////////////////// RGYR
@@ -179,7 +257,7 @@ class Plotter_RMSD1D(Plotter):
         self.stylize_ax(self.ax_dict['a'], title, "Frame", "RMSD")
 
         ##### PLOTTING
-        self.init_plot()
+        self.init_plots()
 
         ##### WIDGETS
         self.init_widgets()
@@ -194,7 +272,7 @@ class Plotter_RMSD1D(Plotter):
         fig = plt.figure(layout = "constrained")
         self.ax_dict = fig.subplot_mosaic("a;a;a;a;a;a;b")
 
-    def init_plot(self):
+    def init_plots(self):
         self.line_rmsd0 = self.ax_dict['a'].scatter(self.x, self.rmsd_arr0, color = self.colors, marker = '.')
 
     def init_widgets(self):
@@ -234,7 +312,7 @@ class Plotter_RMSD1D_Compare(Plotter_RMSD1D):
         super().update_values(ref_frame)
         self.rmsd_arr1 = self.rmsd_mat1[ref_frame]
 
-    def init_plot(self):
+    def init_plots(self):
         self.line_rmsd0 = self.ax_dict['a'].scatter(self.x, self.rmsd_arr0, color = BLUE, marker = '+', s = 12, label = self.label0)
         self.line_rmsd1 = self.ax_dict['a'].scatter(self.x, self.rmsd_arr1, color = HALF_RED, marker = 'x', s = 12, label = self.label1)
         self.ax_dict['a'].legend()

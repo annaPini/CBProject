@@ -6,6 +6,7 @@ docs_main = dict(
     cluster = "description...",
     cmap = "description...",
     pca = "description...",
+    pyinteraph = "description...",
     rama = "description...",
     rgyr = "description...",
     rmsd = "description...",
