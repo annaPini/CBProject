@@ -75,15 +75,70 @@ def vis_cluster(plotter_objs):
 
 
 # ------------------------------------------------------------------------------
-def vis_cmap0(): print("placeholder cmap0")
+def vis_cmap0():
+    plotter = Plotter_CMAP()
+    for run_preffix in RUN_PREFFIXES:
+        run0 = run_preffix + "_rep0"
+        run1 = run_preffix + "_rep1"
+
+        coords0 = np.load(DIR_DA_COORDS / f"{run0}.npy")
+        coords1 = np.load(DIR_DA_COORDS / f"{run1}.npy")
+
+        plotter.base_cmap(coords0, frame = 0, title = run0)
+        plotter.base_cmap(coords1, frame = 0, title = run1)
 
 
 # ------------------------------------------------------------------------------
-def vis_cmap1(): print("placeholder cmap1")
+def vis_cmap1(plotter_objs):
+    #### Example of specific analysis for these two trajectories
+    coords_mt2 = np.load(DIR_DA_COORDS / f"mt2_rep0.npy")
+    coords_wt2 = np.load(DIR_DA_COORDS / f"wt2_rep0.npy")
+
+    # -------------------------------------------------------------------------- SPECIFIC ANALYSIS PART 1
+    ### Example: Observe how CMAP values change in time. Not very insightful however
+    plotter_objs.append(Dynamic_CMAP())
+    plotter_objs[-1].viscmap_interactive(coords_mt2, "mt2_rep0")
+
+    ### Idea: Compare change of CMAP values from one frame relative to another reference frame
+    plotter_objs.append(DCMD_1mol_2frames())
+    plotter_objs[-1].viscmap_interactive(coords_mt2, "mt2_rep0")
+
+    ### Same as before but limiting the frames to a time section of interest
+    plotter_objs.append(DCMD_1mol_2frames())
+    plotter_objs[-1].viscmap_interactive(coords_wt2, "mt2_rep0", min_frame = 4000, max_frame = 6000)
+
+    ### Instead of comparing two frames from the same trajectory,
+    ### it's also possible to compare the same frame in two different trajetories
+    plotter_objs.append(DCMD_2mol_1frame())
+    plotter_objs[-1].viscmap_interactive(coords_mt2, coords_wt2, "mt2 vs wt2", min_frame = 4000, max_frame = 6000)
+
+    # -------------------------------------------------------------------------- SPECIFIC ANALYSIS PART 2
+    frame_before = 5472
+    frame_during = 5510
+    frame_after = 5692
+
+    ### Compare change of CMAP values between two frames (fixed)
+    plotter = Plotter_CMAP()
+    plotter.diff_cmap(coords_mt2, frame_before, frame_during, "Before and during")
+    plotter.diff_cmap(coords_mt2, frame_during, frame_after, "During and After")
+    plotter.diff_cmap(coords_mt2, frame_before, frame_after, "Before and After")
 
 
 # ------------------------------------------------------------------------------
-def vis_cmap2(): print("placeholder cmap2")
+def vis_cmap2():
+    # rep = 0
+    rep = 1
+    Plotter_CMAP_AS(
+        coords_AS = {
+            "mt1_as0" : np.load(DIR_DA_COORDS / f"mt1_rep{rep}-AS0.npy"),
+            "mt2_as0" : np.load(DIR_DA_COORDS / f"mt2_rep{rep}-AS0.npy"),
+            "mt2_as1" : np.load(DIR_DA_COORDS / f"mt2_rep{rep}-AS1.npy"),
+            "wt1_as0" : np.load(DIR_DA_COORDS / f"wt1_rep{rep}-AS0.npy"),
+            "wt2_as0" : np.load(DIR_DA_COORDS / f"wt2_rep{rep}-AS0.npy"),
+            "wt2_as1" : np.load(DIR_DA_COORDS / f"wt2_rep{rep}-AS1.npy")
+        },
+        title = f"All Trajectories, Repetition {rep}"
+    )
 
 
 # ------------------------------------------------------------------------------
@@ -144,7 +199,7 @@ def vis_rgyr():
 
 
 # ------------------------------------------------------------------------------
-def vis_rmsd0(plotter_objs):
+def vis_rmsd0():
     """RMSD 2D (memory intensive)"""
 
     for run_preffix in RUN_PREFFIXES:
@@ -242,9 +297,9 @@ if __name__ == "__main__":
     parser.add_argument("-c", "--calc", action = "store_true", help = docs_main["calc"])
     parser.add_argument("-b", "--bse", action = "store_true", help = docs_main["bse"])
     parser.add_argument("-l", "--cluster", action = "store_true", help = docs_main["cluster"])
-    parser.add_argument("-m0", "--cmap0", action = "store_true", help = docs_main["cmap"]) # TODO GENERAL ANALYSIS
-    parser.add_argument("-m1", "--cmap1", action = "store_true", help = docs_main["cmap"]) # TODO SPECIFIC ANALYSIS
-    parser.add_argument("-m2", "--cmap2", action = "store_true", help = docs_main["cmap"]) # TODO SPECIFIC ANALYSIS ACTIVE SITE
+    parser.add_argument("-m0", "--cmap0", action = "store_true", help = docs_main["cmap"]) # GENERAL ANALYSIS
+    parser.add_argument("-m1", "--cmap1", action = "store_true", help = docs_main["cmap"]) # [WIP] SPECIFIC ANALYSIS
+    parser.add_argument("-m2", "--cmap2", action = "store_true", help = docs_main["cmap"]) # SPECIFIC ANALYSIS ACTIVE SITE
     parser.add_argument("-p", "--pca", action = "store_true", help = docs_main["pca"])
     parser.add_argument("-y", "--pyinteraph", action = "store_true", help = docs_main["pyinteraph"]) # TODO
     parser.add_argument("-a", "--rama", action = "store_true", help = docs_main["rama"])
@@ -281,18 +336,18 @@ if __name__ == "__main__":
     plotter_objs = []
     if args.bse: vis_bse()
     if args.cluster: vis_cluster(plotter_objs)
-    if args.cmap0: vis_cmap0()
-    if args.cmap1: vis_cmap1()
-    if args.cmap2: vis_cmap2()
+    if args.cmap0: vis_cmap0() # GENERAL ANALYSIS
+    if args.cmap1: vis_cmap1(plotter_objs) # SPECIFIC ANALYSIS
+    if args.cmap2: vis_cmap2() # SPECIFIC ANALYSIS ACTIVE SITE
     if args.pca: vis_pca(plotter_objs)
     if args.pyinteraph: vis_pyinteraph()
     if args.rama: vis_rama(plotter_objs)
     if args.rgyr: vis_rgyr()
-    if args.rmsd0: vis_rmsd0(plotter_objs)
-    if args.rmsd1: vis_rmsd1(plotter_objs)
-    if args.rmsd2: vis_rmsd2(plotter_objs)
-    if args.rmsf0: vis_rmsf0()
-    if args.rmsf1: vis_rmsf1()
+    if args.rmsd0: vis_rmsd0() # 2D
+    if args.rmsd1: vis_rmsd1(plotter_objs) # 1D COMPARE INTRA
+    if args.rmsd2: vis_rmsd2(plotter_objs) # 1D COMPARE INTER
+    if args.rmsf0: vis_rmsf0() # COMPARE INTRA
+    if args.rmsf1: vis_rmsf1() # COMPARE INTER
     if args.sasa: vis_sasa()
 
     plt.show()
