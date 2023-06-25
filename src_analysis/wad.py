@@ -1,5 +1,6 @@
-# ////////////////////////////////////////////////////////////////////////////// IMPORTS
 from wad_pipeline._params import *
+from wad_pipeline.info import Info
+from wad_pipeline.step0_rmsd import Plotter_RMSD1D_WAD
 from wad_pipeline.step1_vmd import gen_cut_xtc, gen_vmd
 from wad_pipeline.step2_calc import get_box_dimensions, calc_water_density
 from wad_pipeline.step3_meshes import extract_colors, extract_vertices, prepare_faces, extract_faces
@@ -7,7 +8,6 @@ from wad_pipeline.step4_plot import load_vertices_faces, plot_layer, plot_densit
 
 from _params import *
 from documentation import docs_wad
-from visualizations import Plotter_RMSD1D
 
 import re, argparse
 import numpy as np
@@ -15,88 +15,10 @@ import MDAnalysis as mda
 from argparse import RawDescriptionHelpFormatter
 
 import matplotlib.pyplot as plt
-from matplotlib.widgets import Slider, Button
 import plotly.graph_objects as go
 
 
-# ////////////////////////////////////////////////////////////////////////////// CLASSES
-class Plotter_RMSD1D_WAD(Plotter_RMSD1D):
-    init_rmsd_treshold = 2
-
-    def vis_rmsd1d(self, rmsd_mat0, title = ''):
-        self.y = np.zeros(rmsd_mat0.shape[0])
-        super().vis_rmsd1d(rmsd_mat0, title)
-        print(f"...>>> WAD frame selection mode.")
-
-    def init_axes(self):
-        self.fig = plt.figure(layout = "constrained")
-        self.ax_dict = self.fig.subplot_mosaic("aaaa;aaaa;aaaa;aaaa;aaaa;aaaa;bbbd;cccd")
-
-    def init_plot(self):
-        super().init_plot()
-        self.line_treshold = self.ax_dict['a'].plot(self.x, self.y)
-
-    def init_widgets(self):
-        super().init_widgets()
-
-        self.slid_rmsd_treshold = Slider(
-            ax = self.ax_dict['c'],
-            label = "rmsd_treshold", color = "blue",
-            valstep = .05, valinit = self.init_rmsd_treshold,
-            valmin = 0, valmax = np.max(self.rmsd_mat0),
-            valfmt = "%02.2f"
-        )
-        self.slid_rmsd_treshold.on_changed(self.update_plot)
-
-        self.button_save = Button(
-            ax = self.ax_dict['d'],
-            label = "Save WA frames"
-        )
-        self.button_save.on_clicked(self.save_selected_frames)
-
-
-    def update_plot(self, val):
-        self.update_values(self.slid_ref_frame.val, self.slid_rmsd_treshold.val)
-        self.update_line_rmsd()
-        self.update_line_treshold()
-
-    def update_values(self, ref_frame, rmsd_treshold = None):
-        if rmsd_treshold is None:
-            rmsd_treshold = self.init_rmsd_treshold
-
-        self.rmsd_arr0 = self.rmsd_mat0[ref_frame]
-
-        self.colors[:] = BLUE
-        self.colors[self.rmsd_arr0 <= rmsd_treshold] = GREEN
-        self.colors[ref_frame] = RED
-
-        self.y[:] = rmsd_treshold
-
-    # --------------------------------------------------------------------------
-    def update_line_treshold(self):
-        self.line_treshold[0].set_data(self.x, self.y)
-
-    # --------------------------------------------------------------------------
-    def save_selected_frames(self, event):
-        ref_frame = self.slid_ref_frame.val
-        rmsd_treshold = self.slid_rmsd_treshold.val
-
-        self.rmsd_arr0 = self.rmsd_mat0[ref_frame]
-        frames = [int(f) for f in self.x[self.rmsd_arr0 <= rmsd_treshold]]
-
-        info = Info(DIR_DA_WAD / f"{RUN_WAD}-info.json")
-
-        info.update(
-            rsmd_treshold = rmsd_treshold,
-            ref_frame = ref_frame,
-            ref_frame_index = frames.index(ref_frame),
-            frames = frames,
-        )
-
-        self.button_save.label.set_text(f"Saved {len(frames)} frames")
-
-
-# ////////////////////////////////////////////////////////////////////////////// FUNCTIONS
+# //////////////////////////////////////////////////////////////////////////////
 def choose_frames():
     plotter = Plotter_RMSD1D_WAD()
     plotter.vis_rmsd1d(
@@ -217,7 +139,7 @@ def visualize():
     """)
 
 
-# ////////////////////////////////////////////////////////////////////////////// MAIN
+# //////////////////////////////////////////////////////////////////////////////
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description = docs_wad["main"], formatter_class = RawDescriptionHelpFormatter)
     parser.add_argument("-0", "--rmsd", action = "store_true", help = docs_wad["rmsd"])
@@ -237,4 +159,4 @@ if __name__ == "__main__":
     if args.plot: visualize()
 
 
-# ////////////////////////////////////////////////////////////////////////////// END
+# //////////////////////////////////////////////////////////////////////////////

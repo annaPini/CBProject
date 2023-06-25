@@ -31,6 +31,12 @@ class Plotter:
         return im, colorbar
 
 
+    def plot_heatmap_cax(self, cax, ax, data, cmap):
+        im = ax.imshow(data, cmap)
+        colorbar = plt.colorbar(im, cax = cax)
+        colorbar.ax.tick_params(labelsize = 12)
+        return im, colorbar
+
 
     def update_line_data(self, line, x, data):
         line.set_offsets(
@@ -79,109 +85,127 @@ class Plotter_CMAP(Plotter):
         self.plot_heatmap(fig, ax, mat, color_method)
 
 
-# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ WIP
-class Dynamic_CMAP(Plotter_CMAP):
-
-    def viscmap_interactive(self, coords, title = '', min_frame = 0, max_frame = 6000):
-        self.min_frame = min_frame
-        self.max_frame = max_frame
-
-        print(f">>> Plotting CMAP for '{title}'...")
-        self.coords = coords
-        self.fig, self.ax = plt.subplots()
-
-        self.ax.set_title(title, fontdict = dict(fontsize = 20))
-        self.ax.set_xlabel("CA atom", fontdict = dict(fontsize = 16))
-        self.ax.set_ylabel("CA atom", fontdict = dict(fontsize = 16))
-        self.ax.tick_params(labelsize = 12)
-
-
-        self.fig.subplots_adjust(bottom = 0.25, top = 0.9, left = 0.15, right = 0.8)
-        self.init_plot()
-
-
-    def vis_cmap(self, cmap, color_method):
-        self.im = self.ax.imshow(cmap, cmap = color_method)
-        self.colorbar = self.fig.colorbar(self.im)
-        self.colorbar.ax.tick_params(labelsize = 12)
-
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+class Plotter_CMAP_Dynamic(Plotter_CMAP):
+    # -------------------------------------------------------------------------- OVERRIDES
     def base_cmap(self, frame):
-        self.vis_cmap(-calc_cmap(self.coords[frame]), "Reds")
+        self.plot_cmap(calc_cmap(self.coords0[frame]), "Reds_r")
+
 
     def diff_cmap(self, frame0, frame1, color_method = "Blues"):
-        cmap0 = calc_cmap(self.coords[frame0])
-        cmap1 = calc_cmap(self.coords[frame1])
-        self.vis_cmap(self.do_abs(cmap1 - cmap0), color_method)
+        cmap0 = calc_cmap(self.coords0[frame0])
+        cmap1 = calc_cmap(self.coords0[frame1])
+        self.plot_cmap(self.do_abs(cmap1 - cmap0), color_method)
+
+
+    def plot_cmap(self, cmap, color_method):
+        self.im, self.colorbar = self.plot_heatmap_cax(self.ax_dict['x'], self.ax_dict['a'], cmap, color_method)
 
 
     # --------------------------------------------------------------------------
-    def init_plot(self):
+    def viscmap_interactive(self, coords0, title = '', min_frame = 0, max_frame = 6000):
+        print(f">>> Plotting base CMAP for '{title}'...")
+
+        ##### DATA
+        self.min_frame = min_frame
+        self.max_frame = max_frame
+        self.coords0 = coords0
+
+        ##### FIGURES CREATION
+        self.init_axes()
+        self.stylize_ax(self.ax_dict['a'], title, "CA Atom", "CA Atom")
+
+        ##### PLOTTING
+        self.init_plots()
+
+        ##### WIDGETS
+        self.init_widgets()
+
+
+    # --------------------------------------------------------------------------
+    def init_axes(self):
+        self.fig = plt.figure(layout = "constrained")
+        self.ax_dict = self.fig.subplot_mosaic(
+            "aaaaaaaaax;aaaaaaaaax;aaaaaaaaax;aaaaaaaaax;aaaaaaaaax;aaaaaaaaax;bbbbbbbbbb"
+        )
+
+    def init_plots(self):
         self.base_cmap(self.min_frame)
+
+    def init_widgets(self):
         self.init_slider_frame0()
 
     # --------------------------------------------------------------------------
     def init_slider_frame0(self):
         self.slid_frame0 = Slider(
-            ax = plt.axes((.15, .10, .5, .03)),
+            ax = self.ax_dict['b'],
             label = "frame", color = "orange" ,
             valstep = 1, valinit = self.min_frame,
             valmin = self.min_frame, valmax = self.max_frame,
+            valfmt = "%04i"
         )
         self.slid_frame0.on_changed(self.update_cmap)
 
     def update_cmap(self, val):
         frame = self.slid_frame0.val
-        cmap = calc_cmap(self.coords[frame])
+        cmap = calc_cmap(self.coords0[frame])
 
-        self.im.set_data(-cmap)
-        self.im.set_clim(vmin = np.min(-cmap), vmax = 0)
+        self.im.set_data(cmap)
+        self.im.set_clim(vmin = 0, vmax = np.max(cmap))
         self.colorbar.update_normal(self.im)
 
 
-# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ WIP
-class DCMD_1mol_2frames(Dynamic_CMAP):
-    def init_plot(self):
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+class Plotter_DCMD_1Traj_2Frame(Plotter_CMAP_Dynamic):
+    def init_axes(self):
+        self.fig = plt.figure(layout = "constrained")
+        self.ax_dict = self.fig.subplot_mosaic(
+            "aaaaaaaaax;aaaaaaaaax;aaaaaaaaax;aaaaaaaaax;aaaaaaaaax;aaaaaaaaax;bbbbbbbbbb;cccccccccc"
+        )
+
+    def init_plots(self):
         self.diff_cmap(self.min_frame, self.min_frame + 1, "seismic")
+
+    def init_widgets(self):
         self.init_slider_frame0()
         self.init_slider_frame1()
 
     # --------------------------------------------------------------------------
     def init_slider_frame1(self):
         self.slid_frame1 = Slider(
-            ax = plt.axes((.15, .05, .5, .03)),
+            ax = self.ax_dict['c'],
             label = "frame", color = "blue",
             valstep = 1, valinit = self.min_frame + 1,
             valmin = self.min_frame, valmax = self.max_frame,
+            valfmt = "%04i"
         )
         self.slid_frame1.on_changed(self.update_cmap)
 
     def update_cmap(self, val):
         frame0 = self.slid_frame0.val
         frame1 = self.slid_frame1.val
-        diff = self.do_abs(calc_cmap(self.coords[frame1]) - calc_cmap(self.coords[frame0]))
+        diff = self.do_abs(calc_cmap(self.coords0[frame1]) - calc_cmap(self.coords0[frame0]))
 
         self.im.set_data(diff)
         self.im.set_clim(vmin = np.min(diff), vmax = np.max(diff))
         self.colorbar.update_normal(self.im)
 
 
-# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ WIP
-class DCMD_2mol_1frame(Dynamic_CMAP):
+# ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+class Plotter_DCMD_2Traj_1Frame(Plotter_CMAP_Dynamic):
     def viscmap_interactive(self, coords0, coords1, title = '', min_frame = 0, max_frame = 6000):
         self.coords1 = coords1
         super().viscmap_interactive(coords0, title, min_frame, max_frame)
 
-    def init_plot(self):
-        cmap0 = calc_cmap(self.coords[self.min_frame])
-        cmap1 = calc_cmap(self.coords1[self.min_frame])
-        self.vis_cmap(self.do_abs(cmap1 - cmap0), "seismic")
 
-        self.init_slider_frame0()
+    def init_plots(self):
+        cmap0 = calc_cmap(self.coords0[self.min_frame])
+        cmap1 = calc_cmap(self.coords1[self.min_frame])
+        self.plot_cmap(self.do_abs(cmap1 - cmap0), "seismic")
 
     # --------------------------------------------------------------------------
-    def update_cmap(self, val):
-        frame = self.slid_frame0.val
-        diff = self.do_abs(calc_cmap(self.coords1[frame]) - calc_cmap(self.coords[frame]))
+    def update_cmap(self, frame):
+        diff = self.do_abs(calc_cmap(self.coords1[frame]) - calc_cmap(self.coords0[frame]))
 
         self.im.set_data(diff)
         self.im.set_clim(0, vmax = np.max(diff))

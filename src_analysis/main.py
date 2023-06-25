@@ -96,20 +96,20 @@ def vis_cmap1(plotter_objs):
 
     # -------------------------------------------------------------------------- SPECIFIC ANALYSIS PART 1
     ### Example: Observe how CMAP values change in time. Not very insightful however
-    plotter_objs.append(Dynamic_CMAP())
+    plotter_objs.append(Plotter_CMAP_Dynamic())
     plotter_objs[-1].viscmap_interactive(coords_mt2, "mt2_rep0")
 
     ### Idea: Compare change of CMAP values from one frame relative to another reference frame
-    plotter_objs.append(DCMD_1mol_2frames())
+    plotter_objs.append(Plotter_DCMD_1Traj_2Frame())
     plotter_objs[-1].viscmap_interactive(coords_mt2, "mt2_rep0")
 
     ### Same as before but limiting the frames to a time section of interest
-    plotter_objs.append(DCMD_1mol_2frames())
+    plotter_objs.append(Plotter_DCMD_1Traj_2Frame())
     plotter_objs[-1].viscmap_interactive(coords_wt2, "mt2_rep0", min_frame = 4000, max_frame = 6000)
 
     ### Instead of comparing two frames from the same trajectory,
     ### it's also possible to compare the same frame in two different trajetories
-    plotter_objs.append(DCMD_2mol_1frame())
+    plotter_objs.append(Plotter_DCMD_2Traj_1Frame())
     plotter_objs[-1].viscmap_interactive(coords_mt2, coords_wt2, "mt2 vs wt2", min_frame = 4000, max_frame = 6000)
 
     # -------------------------------------------------------------------------- SPECIFIC ANALYSIS PART 2
@@ -126,19 +126,18 @@ def vis_cmap1(plotter_objs):
 
 # ------------------------------------------------------------------------------
 def vis_cmap2():
-    # rep = 0
-    rep = 1
-    Plotter_CMAP_AS(
-        coords_AS = {
-            "mt1_as0" : np.load(DIR_DA_COORDS / f"mt1_rep{rep}-AS0.npy"),
-            "mt2_as0" : np.load(DIR_DA_COORDS / f"mt2_rep{rep}-AS0.npy"),
-            "mt2_as1" : np.load(DIR_DA_COORDS / f"mt2_rep{rep}-AS1.npy"),
-            "wt1_as0" : np.load(DIR_DA_COORDS / f"wt1_rep{rep}-AS0.npy"),
-            "wt2_as0" : np.load(DIR_DA_COORDS / f"wt2_rep{rep}-AS0.npy"),
-            "wt2_as1" : np.load(DIR_DA_COORDS / f"wt2_rep{rep}-AS1.npy")
-        },
-        title = f"All Trajectories, Repetition {rep}"
-    )
+    for rep in (0, 1):
+        Plotter_CMAP_AS(
+            coords_AS = {
+                "mt1_as0" : np.load(DIR_DA_COORDS / f"mt1_rep{rep}-AS0.npy"),
+                "mt2_as0" : np.load(DIR_DA_COORDS / f"mt2_rep{rep}-AS0.npy"),
+                "mt2_as1" : np.load(DIR_DA_COORDS / f"mt2_rep{rep}-AS1.npy"),
+                "wt1_as0" : np.load(DIR_DA_COORDS / f"wt1_rep{rep}-AS0.npy"),
+                "wt2_as0" : np.load(DIR_DA_COORDS / f"wt2_rep{rep}-AS0.npy"),
+                "wt2_as1" : np.load(DIR_DA_COORDS / f"wt2_rep{rep}-AS1.npy")
+            },
+            title = f"All Trajectories, Repetition {rep}"
+        ) # WIP must stylish plot
 
 
 # ------------------------------------------------------------------------------
@@ -298,7 +297,7 @@ if __name__ == "__main__":
     parser.add_argument("-b", "--bse", action = "store_true", help = docs_main["bse"])
     parser.add_argument("-l", "--cluster", action = "store_true", help = docs_main["cluster"])
     parser.add_argument("-m0", "--cmap0", action = "store_true", help = docs_main["cmap"]) # GENERAL ANALYSIS
-    parser.add_argument("-m1", "--cmap1", action = "store_true", help = docs_main["cmap"]) # [WIP] SPECIFIC ANALYSIS
+    parser.add_argument("-m1", "--cmap1", action = "store_true", help = docs_main["cmap"]) # SPECIFIC ANALYSIS
     parser.add_argument("-m2", "--cmap2", action = "store_true", help = docs_main["cmap"]) # SPECIFIC ANALYSIS ACTIVE SITE
     parser.add_argument("-p", "--pca", action = "store_true", help = docs_main["pca"])
     parser.add_argument("-y", "--pyinteraph", action = "store_true", help = docs_main["pyinteraph"]) # TODO
