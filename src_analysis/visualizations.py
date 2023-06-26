@@ -125,9 +125,15 @@ class Plotter_CMAP_Dynamic(Plotter_CMAP):
     # --------------------------------------------------------------------------
     def init_axes(self):
         self.fig = plt.figure(layout = "constrained")
-        self.ax_dict = self.fig.subplot_mosaic(
-            "aaaaaaaaax;aaaaaaaaax;aaaaaaaaax;aaaaaaaaax;aaaaaaaaax;aaaaaaaaax;bbbbbbbbbb"
-        )
+        self.ax_dict = self.fig.subplot_mosaic('\n'.join([
+            "aaaaaaaaax",
+            "aaaaaaaaax",
+            "aaaaaaaaax",
+            "aaaaaaaaax",
+            "aaaaaaaaax",
+            "aaaaaaaaax",
+            "bbbbbbbbbb"
+        ]))
 
     def init_plots(self):
         self.base_cmap(self.min_frame)
@@ -159,9 +165,16 @@ class Plotter_CMAP_Dynamic(Plotter_CMAP):
 class Plotter_DCMD_1Traj_2Frame(Plotter_CMAP_Dynamic):
     def init_axes(self):
         self.fig = plt.figure(layout = "constrained")
-        self.ax_dict = self.fig.subplot_mosaic(
-            "aaaaaaaaax;aaaaaaaaax;aaaaaaaaax;aaaaaaaaax;aaaaaaaaax;aaaaaaaaax;bbbbbbbbbb;cccccccccc"
-        )
+        self.ax_dict = self.fig.subplot_mosaic('\n'.join([
+            "aaaaaaaaax",
+            "aaaaaaaaax",
+            "aaaaaaaaax",
+            "aaaaaaaaax",
+            "aaaaaaaaax",
+            "aaaaaaaaax",
+            "bbbbbbbbbb",
+            "cccccccccc"
+        ]))
 
     def init_plots(self):
         self.diff_cmap(self.min_frame, self.min_frame + 1, "seismic")
@@ -317,7 +330,32 @@ class Plotter_PCA(Plotter):
 
 
 # ////////////////////////////////////////////////////////////////////////////// PYINTERAPH
-class Plotter_Pyinteraph(Plotter): pass
+class Plotter_Pyinteraph(Plotter):
+    def vis_pyinteraph(self, path_reduced, title = ''):
+        print(f">>> Plotting Pyinteraph for '{title}'...")
+
+        ##### DATA
+        header = ["res0_chain", "res0_num", "res0_name", "res0_inter_group", "res1_chain", "res1_num", "res1_name", "res1_inter_group", "occurrence"]
+        df = pd.read_csv(path_reduced, header = None, usecols = range(len(header)), names = header)
+
+        atoms = sorted(set(df.res0_num) | set(df.res1_num))
+        matrix = np.zeros((len(atoms), len(atoms)))
+        atom_to_index = {atom:id for id,atom in enumerate(atoms)}
+
+        for _,row in df.iterrows():
+            atom_0_id = atom_to_index[row["res0_num"]]
+            atom_1_id = atom_to_index[row["res1_num"]]
+            matrix[atom_0_id, atom_1_id] = row["occurrence"]
+            matrix[atom_1_id, atom_0_id] = row["occurrence"]
+
+        ##### FIGURES CREATION
+        fig, ax = plt.subplots()
+        self.stylize_ax(ax, title, "X", "Y")
+        ax.set_xticks(np.arange(len(atoms), step = 10), labels = atoms[::10])
+        ax.set_yticks(np.arange(len(atoms), step = 10), labels = atoms[::10])
+
+        ##### PLOTTING
+        self.plot_heatmap(fig, ax, matrix, "hot")
 
 
 # ////////////////////////////////////////////////////////////////////////////// RAMA
@@ -597,8 +635,30 @@ class Plotter_RMSF(Plotter):
 
 
 # ////////////////////////////////////////////////////////////////////////////// SASA
-class Plotter_SASA(Plotter): pass
+class Plotter_SASA(Plotter):
+    def vis_sasa(self, path_xvg, title = '', xlabel = '', ylabel = ''):
+        print(f">>> Plotting SASA for '{title}'...")
 
+        _, ax = plt.subplots()
+        self.stylize_ax(ax, title, xlabel, ylabel)
+
+        x, y = np.loadtxt(path_xvg, comments = ['#', '@'], unpack = True)
+        ax.scatter(x, y, color = HALF_BLUE, marker = '+')
+
+
+    def vis_sasa_2vals(self, path_xvg, title = '', xlabel = '', ylabel = '', ylegend0 = '', ylegend1 = ''):
+        print(f">>> Plotting SASA for '{title}'...")
+
+        data = np.loadtxt(path_xvg, comments = ['#', '@'])
+
+        _, ax1 = plt.subplots()
+        ax2 = ax1.twinx()
+        self.stylize_ax(ax1, title, xlabel, ylabel)
+        self.stylize_ax(ax2, title, xlabel, ylabel)
+
+        line1 = ax1.scatter(data[:,0], data[:,1], color = HALF_BLUE, marker = '+', label = ylegend0)
+        line2 = ax2.scatter(data[:,0], data[:,2], color = HALF_RED, marker = '+', label = ylegend1)
+        ax1.legend(handles = [line1, line2])
 
 
 

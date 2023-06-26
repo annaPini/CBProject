@@ -163,7 +163,20 @@ def vis_pca(plotter_objs):
 
 
 # ------------------------------------------------------------------------------
-def vis_pyinteraph(): print("placeholder pyinteraph")
+def vis_pyinteraph():
+    plotter = Plotter_Pyinteraph()
+    # plotter.vis_pyinteraph(
+    #     path_reduced = DIR_DA_PYINTERAPH / "hydrogen-bonds_all.csv",
+    #     title = "Hydrogen Bonds"
+    # )
+    plotter.vis_pyinteraph(
+        path_reduced = DIR_DA_PYINTERAPH / "salt-bridges_all.csv",
+        title = "Salt Bridges"
+    )
+    plotter.vis_pyinteraph(
+        path_reduced = DIR_DA_PYINTERAPH / "hydrophobic-clusters_all.csv",
+        title = "Hydrophobic Clusters"
+    ) # WIP add appropriate labels
 
 
 # ------------------------------------------------------------------------------
@@ -287,7 +300,44 @@ def vis_rmsf1():
 
 
 # ------------------------------------------------------------------------------
-def vis_sasa(): print("placeholder sasa")
+def vis_sasa():
+    plotter = Plotter_SASA()
+    plotter.vis_sasa(
+        path_xvg = DIR_DA_SASA / "area.xvg",
+        title = "Solvent Accessible Surface",
+        xlabel = "Time ($ps$)",
+        ylabel = r"Area ($nm^2$)"
+    )
+    plotter.vis_sasa_2vals(
+        path_xvg = DIR_DA_SASA / "oa.xvg",
+        title = "Area per atom over the trajectory",
+        xlabel = "Atom",
+        ylabel = "Area ($nm^2$)",
+        ylegend0 = "Average ($nm^2$)",
+        ylegend1 = "Standard deviation ($nm^2$)"
+    )
+    plotter.vis_sasa_2vals(
+        path_xvg = DIR_DA_SASA / "or.xvg",
+        title = "Area per residue over the trajectory",
+        xlabel = "Residue",
+        ylabel = "Area ($nm^2$)",
+        ylegend0 = "Average ($nm^2$)",
+        ylegend1 = "Standard deviation ($nm^2$)"
+    )
+    plotter.vis_sasa(
+        path_xvg = DIR_DA_SASA / "sfe.xvg",
+        title = "Free Energy of Solvation",
+        xlabel = "Time ($ps$)",
+        ylabel = "D Gsolv"
+    )
+    plotter.vis_sasa_2vals(
+        path_xvg = DIR_DA_SASA / "volume.xvg",
+        title = "Volume and Density",
+        xlabel = "Time ($ps$)",
+        ylabel = '',
+        ylegend0 = "Volume ($nm^3$)",
+        ylegend1 = "Density ($g/l$)"
+    ) # WIP improve vis_sasa_2vals
 
 
 # //////////////////////////////////////////////////////////////////////////////
@@ -300,7 +350,7 @@ if __name__ == "__main__":
     parser.add_argument("-m1", "--cmap1", action = "store_true", help = docs_main["cmap"]) # SPECIFIC ANALYSIS
     parser.add_argument("-m2", "--cmap2", action = "store_true", help = docs_main["cmap"]) # SPECIFIC ANALYSIS ACTIVE SITE
     parser.add_argument("-p", "--pca", action = "store_true", help = docs_main["pca"])
-    parser.add_argument("-y", "--pyinteraph", action = "store_true", help = docs_main["pyinteraph"]) # TODO
+    parser.add_argument("-y", "--pyinteraph", action = "store_true", help = docs_main["pyinteraph"])
     parser.add_argument("-a", "--rama", action = "store_true", help = docs_main["rama"])
     parser.add_argument("-g", "--rgyr", action = "store_true", help = docs_main["rgyr"])
     parser.add_argument("-d0", "--rmsd0", action = "store_true", help = docs_main["rmsd"]) # 2D
@@ -308,7 +358,7 @@ if __name__ == "__main__":
     parser.add_argument("-d2", "--rmsd2", action = "store_true", help = docs_main["rmsd"]) # 1D COMPARE INTER
     parser.add_argument("-f0", "--rmsf0", action = "store_true", help = docs_main["rmsf"]) # COMPARE INTRA
     parser.add_argument("-f1", "--rmsf1", action = "store_true", help = docs_main["rmsf"]) # COMPARE INTER
-    parser.add_argument("-s", "--sasa", action = "store_true", help = docs_main["sasa"]) # TODO
+    parser.add_argument("-s", "--sasa", action = "store_true", help = docs_main["sasa"])
     args = parser.parse_args()
 
     plot_flags = {**vars(args)}
