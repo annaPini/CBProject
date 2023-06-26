@@ -312,17 +312,15 @@ def vis_sasa():
         path_xvg = DIR_DA_SASA / "oa.xvg",
         title = "Area per atom over the trajectory",
         xlabel = "Atom",
-        ylabel = "Area ($nm^2$)",
-        ylegend0 = "Average ($nm^2$)",
-        ylegend1 = "Standard deviation ($nm^2$)"
+        ylabel0 = "Average Area ($nm^2$)",
+        ylabel1 = "Std Dev Area ($nm^2$)"
     )
     plotter.vis_sasa_2vals(
         path_xvg = DIR_DA_SASA / "or.xvg",
         title = "Area per residue over the trajectory",
         xlabel = "Residue",
-        ylabel = "Area ($nm^2$)",
-        ylegend0 = "Average ($nm^2$)",
-        ylegend1 = "Standard deviation ($nm^2$)"
+        ylabel0 = "Average Area ($nm^2$)",
+        ylabel1 = "Std Dev Area ($nm^2$)"
     )
     plotter.vis_sasa(
         path_xvg = DIR_DA_SASA / "sfe.xvg",
@@ -334,10 +332,9 @@ def vis_sasa():
         path_xvg = DIR_DA_SASA / "volume.xvg",
         title = "Volume and Density",
         xlabel = "Time ($ps$)",
-        ylabel = '',
-        ylegend0 = "Volume ($nm^3$)",
-        ylegend1 = "Density ($g/l$)"
-    ) # WIP improve vis_sasa_2vals
+        ylabel0 = "Volume ($nm^3$)",
+        ylabel1 = "Density ($g/l$)"
+    )
 
 
 # //////////////////////////////////////////////////////////////////////////////

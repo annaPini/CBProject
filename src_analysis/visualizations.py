@@ -642,24 +642,21 @@ class Plotter_SASA(Plotter):
         _, ax = plt.subplots()
         self.stylize_ax(ax, title, xlabel, ylabel)
 
-        x, y = np.loadtxt(path_xvg, comments = ['#', '@'], unpack = True)
+        x,y = np.loadtxt(path_xvg, comments = ['#', '@'], unpack = True)
         ax.scatter(x, y, color = HALF_BLUE, marker = '+')
 
 
-    def vis_sasa_2vals(self, path_xvg, title = '', xlabel = '', ylabel = '', ylegend0 = '', ylegend1 = ''):
+    def vis_sasa_2vals(self, path_xvg, title = '', xlabel = '', ylabel0 = '', ylabel1 = ''):
         print(f">>> Plotting SASA for '{title}'...")
 
-        data = np.loadtxt(path_xvg, comments = ['#', '@'])
+        fig = plt.figure()
+        ax_dict = fig.subplot_mosaic("ab")
+        self.stylize_ax(ax_dict['a'], title, xlabel, ylabel0)
+        self.stylize_ax(ax_dict['b'], title, xlabel, ylabel1)
 
-        _, ax1 = plt.subplots()
-        ax2 = ax1.twinx()
-        self.stylize_ax(ax1, title, xlabel, ylabel)
-        self.stylize_ax(ax2, title, xlabel, ylabel)
-
-        line1 = ax1.scatter(data[:,0], data[:,1], color = HALF_BLUE, marker = '+', label = ylegend0)
-        line2 = ax2.scatter(data[:,0], data[:,2], color = HALF_RED, marker = '+', label = ylegend1)
-        ax1.legend(handles = [line1, line2])
-
+        x,y0,y1 = np.loadtxt(path_xvg, comments = ['#', '@'], unpack = True)
+        ax_dict['a'].scatter(x, y0, color = HALF_BLUE, marker = '+')
+        ax_dict['b'].scatter(x, y1, color = HALF_RED,  marker = '+')
 
 
 # //////////////////////////////////////////////////////////////////////////////
