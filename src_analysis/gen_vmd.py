@@ -1,4 +1,4 @@
-from parameters import *
+from _params import *
 
 # //////////////////////////////////////////////////////////////////////////////
 def vmd_start(gro_path, xtc_path, f0, f1):
@@ -137,10 +137,10 @@ if __name__ == "__main__":
     XTC_WT2R1 = DIR_DA_TRAJECTORIES / "wt2_rep1.xtc"
 
     ################################ Progress of the MD post-processing workflow
-    # gen_vmd_basic("postproc_0", GRO_MT2R0, XTC_MT2R0_A, pbc = True)
-    # gen_vmd_basic("postproc_1", GRO_MT2R0, XTC_MT2R0_B, pbc = True)
-    # gen_vmd_basic("postproc_2", GRO_MT2R0, XTC_MT2R0_C, pbc = True)
-    # gen_vmd_basic("postproc_3", GRO_MT2R0, XTC_MT2R0  , pbc = True)
+    gen_vmd_basic("postproc_0", GRO_MT2R0, XTC_MT2R0_A, pbc = True)
+    gen_vmd_basic("postproc_1", GRO_MT2R0, XTC_MT2R0_B, pbc = True)
+    gen_vmd_basic("postproc_2", GRO_MT2R0, XTC_MT2R0_C, pbc = True)
+    gen_vmd_basic("postproc_3", GRO_MT2R0, XTC_MT2R0  , pbc = True)
 
     ################################
     gen_vmd_focus_opening("focus_open_mtr0", GRO_MT2R0, XTC_MT2R0, f0 = 5000, f1 = 6000)
@@ -154,7 +154,7 @@ if __name__ == "__main__":
     gen_vmd_active_site_partA("focus_ASa_mtr0", GRO_MT2R0, XTC_MT2R0, f0 = 5000, f1 = 6000)
     gen_vmd_active_site_partB("focus_ASb_mtr0", GRO_MT2R0, XTC_MT2R0, f0 = 5000, f1 = 6000)
     gen_vmd_active_site_partC("focus_ASc_mtr0", GRO_MT2R0, XTC_MT2R0, f0 = 5000, f1 = 6000)
-    gen_vmd_active_site_partD("focus_ASd_mtr0", GRO_MT2R0, XTC_MT2R0, f0 = 5000, f1 = 6000)
+    # gen_vmd_active_site_partD("focus_ASd_mtr0", GRO_MT2R0, XTC_MT2R0, f0 = 5000, f1 = 6000)
 
     # gen_vmd_active_site_partE("focus_ASe_mtr0", GRO_MT2R0, XTC_MT2R0, f1 = -1)
     # gen_vmd_active_site_partE("focus_ASe_mtr1", GRO_MT2R1, XTC_MT2R1, f1 = -1)

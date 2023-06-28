@@ -1,4 +1,5 @@
 from _params import *
+from wad_pipeline._params import *
 from wad_pipeline.info import Info
 from visualizations import Plotter_RMSD1D
 
