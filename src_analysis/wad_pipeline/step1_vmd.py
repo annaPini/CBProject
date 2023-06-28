@@ -1,4 +1,3 @@
-from parameters import *
 import MDAnalysis as mda
 
 # //////////////////////////////////////////////////////////////////////////////
@@ -52,21 +51,5 @@ pbc box\n"""
 
     with open(vmd_path, 'w') as file: file.write(out)
 
-
-# //////////////////////////////////////////////////////////////////////////////
-if __name__ == "__main__":
-    info = Info(PATH_WAD_INFO)
-
-    PATH_GRO = DIR_DA_TRAJECTORIES / f"{CURRENT_RUN}.gro"
-    PATH_XTC = DIR_DA_TRAJECTORIES / f"{CURRENT_RUN}.xtc"
-
-    PATH_WAD_GRO = DIR_DA_WAD / f"{WAD_NAME}.gro"
-    PATH_WAD_XTC = DIR_DA_WAD / f"{WAD_NAME}.xtc"
-    PATH_WAD_VMD = DIR_DA_WAD / f"{WAD_NAME}.vmd"
-
-    if not PATH_WAD_GRO.exists():
-        gen_cut_xtc(PATH_GRO, PATH_XTC, PATH_WAD_GRO, PATH_WAD_XTC, info)
-
-    gen_vmd(PATH_WAD_GRO, PATH_WAD_XTC, PATH_WAD_VMD, info)
 
 # //////////////////////////////////////////////////////////////////////////////

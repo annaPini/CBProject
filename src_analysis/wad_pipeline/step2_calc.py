@@ -1,4 +1,6 @@
-from parameters import *
+from wad_pipeline._params import *
+
+import numpy as np
 import MDAnalysis as mda
 
 # //////////////////////////////////////////////////////////////////////////////
@@ -11,6 +13,7 @@ def get_box_dimensions(traj, info):
         ybox = float(ybox),
         zbox = float(zbox),
     )
+
 
 def calc_water_density(traj, info):
     # initialization of values
@@ -60,18 +63,5 @@ def calc_water_density(traj, info):
     ############################################################################
     np.save(DIR_DA_WAD / (f"{WAD_NAME}-wet_density.npy"), density, allow_pickle = False)
 
-
-# //////////////////////////////////////////////////////////////////////////////
-if __name__ == "__main__":
-    info = Info(PATH_WAD_INFO)
-
-    PATH_GRO = DIR_DA_TRAJECTORIES / f"{CURRENT_RUN}.gro"
-    PATH_XTC = DIR_DA_TRAJECTORIES / f"{CURRENT_RUN}.xtc"
-
-    traj = mda.Universe(str(PATH_GRO), str(PATH_XTC))
-
-    get_box_dimensions(traj, info)
-    calc_water_density(traj, info)
-    print()
 
 # //////////////////////////////////////////////////////////////////////////////

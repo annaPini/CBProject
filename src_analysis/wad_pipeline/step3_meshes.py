@@ -1,6 +1,8 @@
-from parameters import *
-import pandas as pd
+from wad_pipeline._params import *
+
 import re
+import numpy as np
+import pandas as pd
 
 # //////////////////////////////////////////////////////////////////////////////
 ####################################### MATERIALS
@@ -58,63 +60,5 @@ def extract_faces(faces_str, n_vertices, colors, out_name):
     print(f"...>>> Saving faces to '{out_name}'...")
     faces.to_csv(DIR_DA_WAD / out_name, index = False)
 
-
-# //////////////////////////////////////////////////////////////////////////////
-if __name__ == "__main__":
-    info = Info(PATH_WAD_INFO)
-
-    ####################################### MTL
-    print(f">>> Parsing {WAD_NAME}.mtl")
-    mat_names, mat_colors, colors = extract_colors(DIR_DA_WAD / f"{WAD_NAME}.mtl")
-
-
-    ####################################### OBJ
-    print(f">>> Parsing {WAD_NAME}.obj")
-    with open(DIR_DA_WAD / f"{WAD_NAME}.obj", 'r') as file: obj = file.read()
-
-
-    repr_indexes = [g.start() for g in re.finditer("\ng.*", obj)]
-    n_repr = str(len(repr_indexes))
-    print(f"...>>> Identified {n_repr} representation(s)")
-    repr_indexes.append(len(obj))
-
-
-    box_str = obj[:repr_indexes[0]]
-    print(f"...>>> Extracting box vertices...")
-    box = extract_vertices(box_str)
-
-    xmin, xmax = np.unique(box[:,0])
-    ymin, ymax = np.unique(box[:,1])
-    zmin, zmax = np.unique(box[:,2])
-
-    x_scale = info.xbox / (xmax - xmin)
-    y_scale = info.ybox / (ymax - ymin)
-    z_scale = info.zbox / (zmax - zmin)
-
-    info.update(
-        n_repr = int(n_repr),
-        x_scale = x_scale,
-        y_scale = y_scale,
-        z_scale = z_scale,
-        x_offset = xmin * x_scale,
-        y_offset = ymin * y_scale,
-        z_offset = zmin * z_scale,
-    )
-
-
-    for i,repr_start in enumerate(repr_indexes[:-1]):
-        repr_end = repr_indexes[i + 1]
-        repr = obj[repr_start : repr_end]
-
-        print(f"...>>> Extracting vertices for repr {i}...")
-        n_vertices = extract_vertices(repr, f"{WAD_NAME}-mesh_v{i}.npy")
-
-        print(f"...>>> Extracting faces for repr {i}...")
-        faces_str = prepare_faces(repr)
-
-        if faces_str:
-            extract_faces(faces_str, n_vertices, colors, f"{WAD_NAME}-mesh_f{i}.csv")
-        else:
-            print(f"...>>> No faces found for repr {i}, skipping...")
 
 # //////////////////////////////////////////////////////////////////////////////
