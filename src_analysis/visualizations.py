@@ -337,22 +337,17 @@ class Plotter_Pyinteraph(Plotter):
         ##### DATA
         header = ["res0_chain", "res0_num", "res0_name", "res0_inter_group", "res1_chain", "res1_num", "res1_name", "res1_inter_group", "occurrence"]
         df = pd.read_csv(path_reduced, header = None, usecols = range(len(header)), names = header)
-
-        atoms = sorted(set(df.res0_num) | set(df.res1_num))
-        matrix = np.zeros((len(atoms), len(atoms)))
-        atom_to_index = {atom:id for id,atom in enumerate(atoms)}
+        matrix = np.zeros((N_RESIDS_SUBUNIT, N_RESIDS_SUBUNIT))
 
         for _,row in df.iterrows():
-            atom_0_id = atom_to_index[row.res0_num]
-            atom_1_id = atom_to_index[row.res1_num]
-            matrix[atom_0_id, atom_1_id] = row.occurrence
-            matrix[atom_1_id, atom_0_id] = row.occurrence
+            id0 = row.res0_num - 1
+            id1 = row.res1_num - 1
+            matrix[id0, id1] = row.occurrence
+            matrix[id1, id0] = row.occurrence
 
         ##### FIGURES CREATION
         fig, ax = plt.subplots()
         self.stylize_ax(ax, title, "Residue", "Residue")
-        ax.set_xticks(np.arange(len(atoms), step = 10), labels = atoms[::10])
-        ax.set_yticks(np.arange(len(atoms), step = 10), labels = atoms[::10])
 
         ##### PLOTTING
         self.plot_heatmap(fig, ax, matrix, "hot")

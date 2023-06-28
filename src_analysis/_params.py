@@ -11,6 +11,8 @@ RUNS = ["mt1_rep0", "mt1_rep1", "mt2_rep0", "mt2_rep1", "wt1_rep0", "wt1_rep1", 
 CLUSTERING_LINK_METHOD = "ward"
 COLOR_MAP_CLUSTERS = "prism"
 
+N_RESIDS_SUBUNIT = 306 # hardcoded for systems 8DFN and 7SI9
+
 ####################################### DIRECTORIES
 
 DIR_DA = DIR_PROJECT / "data_analysis"
