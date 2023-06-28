@@ -69,7 +69,7 @@ def vis_cluster(plotter_objs):
         plotter_objs[-1].vis_rmsd1d_clustering(
             rmsd_mat0 = np.load(DIR_DA_RMSD / f"{run0}.npy"),
             Z = np.load(DIR_DA_CLUSTERING / f"{run0}.link.npy"),
-            color_map = COLOR_MAP_RMSD,
+            color_map = COLOR_MAP_CLUSTERS,
             title = run0
         )
 
@@ -84,8 +84,8 @@ def vis_cmap0():
         coords0 = np.load(DIR_DA_COORDS / f"{run0}.npy")
         coords1 = np.load(DIR_DA_COORDS / f"{run1}.npy")
 
-        plotter.base_cmap(coords0, frame = 0, title = run0)
-        plotter.base_cmap(coords1, frame = 0, title = run1)
+        plotter.base_cmap(coords0, frame = 0, title = f"{run0}-f0")
+        plotter.base_cmap(coords1, frame = 0, title = f"{run1}-f0")
 
 
 # ------------------------------------------------------------------------------
@@ -105,23 +105,24 @@ def vis_cmap1(plotter_objs):
 
     ### Same as before but limiting the frames to a time section of interest
     plotter_objs.append(Plotter_DCMD_1Traj_2Frame())
-    plotter_objs[-1].viscmap_interactive(coords_wt2, "mt2_rep0", min_frame = 4000, max_frame = 6000)
+    plotter_objs[-1].viscmap_interactive(coords_mt2, "mt2_rep0", min_frame = 4000, max_frame = 6000)
 
     ### Instead of comparing two frames from the same trajectory,
     ### it's also possible to compare the same frame in two different trajetories
     plotter_objs.append(Plotter_DCMD_2Traj_1Frame())
-    plotter_objs[-1].viscmap_interactive(coords_mt2, coords_wt2, "mt2 vs wt2", min_frame = 4000, max_frame = 6000)
+    plotter_objs[-1].viscmap_interactive(coords_mt2, coords_wt2, "mt2_rep0 vs wt2_rep0", min_frame = 4000, max_frame = 6000)
 
     # -------------------------------------------------------------------------- SPECIFIC ANALYSIS PART 2
+    ### With DCMD, frames of interest can be isolated and further inspected
     frame_before = 5472
     frame_during = 5510
     frame_after = 5692
 
     ### Compare change of CMAP values between two frames (fixed)
     plotter = Plotter_CMAP()
-    plotter.diff_cmap(coords_mt2, frame_before, frame_during, "Before and during")
-    plotter.diff_cmap(coords_mt2, frame_during, frame_after, "During and After")
-    plotter.diff_cmap(coords_mt2, frame_before, frame_after, "Before and After")
+    plotter.diff_cmap(coords_mt2, frame_before, frame_during, f"mt2_rep0 (f{frame_before} vs f{frame_during})")
+    plotter.diff_cmap(coords_mt2, frame_during, frame_after, f"mt2_rep0 (f{frame_during} vs f{frame_after})")
+    plotter.diff_cmap(coords_mt2, frame_before, frame_after, f"mt2_rep0 (f{frame_before} vs f{frame_after})")
 
 
 # ------------------------------------------------------------------------------
@@ -136,8 +137,8 @@ def vis_cmap2():
                 "wt2_as0" : np.load(DIR_DA_COORDS / f"wt2_rep{rep}-AS0.npy"),
                 "wt2_as1" : np.load(DIR_DA_COORDS / f"wt2_rep{rep}-AS1.npy")
             },
-            title = f"All Trajectories, Repetition {rep}"
-        ) # WIP must stylish plot
+            title = f"Average distance between interacting atoms of the Active Site (rep {rep})"
+        )
 
 
 # ------------------------------------------------------------------------------
@@ -146,16 +147,12 @@ def vis_pca(plotter_objs):
         plotter_objs.append(Plotter_PCA())
         run0 = run_preffix + "_rep0"
 
-        cumvar = np.load(DIR_DA_PCA / f"{run0}.cumvar.npy")
-        n_pcs = np.where(cumvar > 0.95)[0][0]
-        print("...>>> NPCS:", n_pcs)
-
         ### Alternatively, can use the 'vis_1pca_plotly' method
         ### With it, interaction with 3D scatter plot is faster
         ### However, it opens several windows, so it's advised to use it for only 1 run
 
         plotter_objs[-1].vis_1pca(
-            cumvar = cumvar,
+            cumvar = np.load(DIR_DA_PCA / f"{run0}.cumvar.npy"),
             space = np.load(DIR_DA_PCA / f"{run0}.space.npy"),
             pcomps = np.load(DIR_DA_PCA / f"{run0}.pcomponents.npy"),
             title = run_preffix
@@ -176,7 +173,7 @@ def vis_pyinteraph():
     plotter.vis_pyinteraph(
         path_reduced = DIR_DA_PYINTERAPH / "hydrophobic-clusters_all.csv",
         title = "Hydrophobic Clusters"
-    ) # WIP add appropriate labels
+    )
 
 
 # ------------------------------------------------------------------------------
@@ -244,22 +241,6 @@ def vis_rmsd1(plotter_objs):
 
 
 # ------------------------------------------------------------------------------
-def vis_rmsd2(plotter_objs):
-    """RMSD 1D compare (inter comparisons)"""
-
-    for run_preffix in RUN_PREFFIXES:
-        run0 = run_preffix + "_rep0"
-        run1 = run_preffix + "_rep1"
-
-        rmsd_mat0 = np.load(DIR_DA_RMSD / f"{run0}.npy")
-        rmsd_mat1 = np.load(DIR_DA_RMSD / f"{run1}.npy")
-
-        # WIP... (placeholder)
-        plotter_objs.append(Plotter_RMSD1D())
-        plotter_objs[-1].vis_rmsd1d(rmsd_mat0, title = run0)
-
-
-# ------------------------------------------------------------------------------
 def vis_rmsf0():
     """RMSF 1D compare (intra comparisons)"""
 
@@ -282,10 +263,10 @@ def vis_rmsf1():
     """RMSF 1D compare (inter comparisons)"""
 
     comparisons = [
+        ("mt1_rep0", "wt1_rep0"),
         ("mt2_rep0", "wt2_rep0"),
         ("mt1_rep0", "mt2_rep0"),
         ("wt1_rep0", "wt2_rep0"),
-        ("mt2_rep0", "wt1_rep0"),
     ]
 
     plotter = Plotter_RMSF()
@@ -351,10 +332,9 @@ if __name__ == "__main__":
     parser.add_argument("-a", "--rama", action = "store_true", help = docs_main["rama"])
     parser.add_argument("-g", "--rgyr", action = "store_true", help = docs_main["rgyr"])
     parser.add_argument("-d0", "--rmsd0", action = "store_true", help = docs_main["rmsd"]) # 2D
-    parser.add_argument("-d1", "--rmsd1", action = "store_true", help = docs_main["rmsd"]) # 1D COMPARE INTRA
-    parser.add_argument("-d2", "--rmsd2", action = "store_true", help = docs_main["rmsd"]) # 1D COMPARE INTER
-    parser.add_argument("-f0", "--rmsf0", action = "store_true", help = docs_main["rmsf"]) # COMPARE INTRA
-    parser.add_argument("-f1", "--rmsf1", action = "store_true", help = docs_main["rmsf"]) # COMPARE INTER
+    parser.add_argument("-d1", "--rmsd1", action = "store_true", help = docs_main["rmsd"]) # 1D
+    parser.add_argument("-f0", "--rmsf0", action = "store_true", help = docs_main["rmsf"]) # COMPARE SAME SYSTEM
+    parser.add_argument("-f1", "--rmsf1", action = "store_true", help = docs_main["rmsf"]) # COMPARE DIFFERENT SYSTEMS
     parser.add_argument("-s", "--sasa", action = "store_true", help = docs_main["sasa"])
     args = parser.parse_args()
 
@@ -390,10 +370,9 @@ if __name__ == "__main__":
     if args.rama: vis_rama(plotter_objs)
     if args.rgyr: vis_rgyr()
     if args.rmsd0: vis_rmsd0() # 2D
-    if args.rmsd1: vis_rmsd1(plotter_objs) # 1D COMPARE INTRA
-    if args.rmsd2: vis_rmsd2(plotter_objs) # 1D COMPARE INTER
-    if args.rmsf0: vis_rmsf0() # COMPARE INTRA
-    if args.rmsf1: vis_rmsf1() # COMPARE INTER
+    if args.rmsd1: vis_rmsd1(plotter_objs) # 1D
+    if args.rmsf0: vis_rmsf0() # COMPARE SAME SYSTEM
+    if args.rmsf1: vis_rmsf1() # COMPARE DIFFERENT SYSTEMS
     if args.sasa: vis_sasa()
 
     plt.show()

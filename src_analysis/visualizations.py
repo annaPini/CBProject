@@ -68,7 +68,7 @@ class Plotter_CMAP(Plotter):
 
 
     def base_cmap(self, coords, frame, title = ''):
-        print(f">>> Plotting base CMAP for '{title}' (frame {frame})...")
+        print(f">>> Plotting base CMAP for '{title}'...")
         self.plot_cmap(title, calc_cmap(coords[frame]), "Reds_r")
 
 
@@ -232,21 +232,22 @@ class Plotter_CMAP_AS(Plotter):
         fig, ax = plt.subplots()
 
         interactions = ["AB", "CD", "EF", "FG", "EG", "GH", "IJ"]
-        df = pd.DataFrame(columns = ["system", "interaction", "distance"])
+        df = pd.DataFrame(columns = ["Trajectory", "Interaction", "Distance"])
 
         print(f">>> Calculating CMAPs for '{title}'...")
         for system,coords in coords_AS.items():
             atoms = {atom : coords[:,i,:] for i,atom in enumerate("ABCDEFGHIJ")}
             for atom0, atom1 in interactions:
-                new_df = pd.DataFrame({"distance" : np.diag(calc_cmap_AS(atoms[atom0], atoms[atom1]))})
-                new_df["interaction"] = atom0 + atom1
-                new_df["system"] = system
+                new_df = pd.DataFrame()
+                new_df["Distance"] = np.diag(calc_cmap_AS(atoms[atom0], atoms[atom1]))
+                new_df["Interaction"] = atom0 + atom1
+                new_df["Trajectory"] = system
                 df = df.append(new_df)
 
         print(f"...>>> Plotting...")
-        # sns.boxplot(data = df, x = "interaction", y = "distance", hue = "system", ax = ax)
-        sns.pointplot(data = df, x = "interaction", y = "distance", hue = "system", ax = ax)
-        # plt.show(block = True)
+        # sns.boxplot(data = df, x = "Interaction", y = "Distance", hue = "Trajectory", ax = ax)
+        sns.pointplot(data = df, x = "Interaction", y = "Distance", hue = "Trajectory", ax = ax)
+        plt.title(title)
 
 
 # ////////////////////////////////////////////////////////////////////////////// PCA
@@ -257,16 +258,14 @@ class Plotter_PCA(Plotter):
         ##### DATA
         self.x = np.arange(pcomps.shape[0])
         self.pcomps = np.copy(pcomps)
+        n_pcs = np.where(cumvar > 0.95)[0][0]
 
-        # print("*****")
-        # print("cumvar:", cumvar.shape)
-        # print("space:", space.shape)
-        # print("pcomps:", pcomps.shape)
-        # print("*****")
+        print("...>>> Components:", len(cumvar))
+        print("...>>> with cumvar > 0.95:", n_pcs)
 
         ##### FIGURES CREATION
         _, ax_cumvar = plt.subplots()
-        self.stylize_ax(ax_cumvar, title, "X", "Cumulative Variance")
+        self.stylize_ax(ax_cumvar, title, "Components", "Cumulative Variance")
         ax_cumvar.set_xlim([0, 100])
 
         fig = plt.figure()
@@ -275,6 +274,7 @@ class Plotter_PCA(Plotter):
         ax_3d = fleft.add_subplot(projection = "3d")
         ax_3d.set_title(title, fontdict = dict(fontsize = 20))
         self.ax_dict = self.fright.subplot_mosaic("a;a;a;b")
+        self.stylize_ax(self.ax_dict['a'], title, "Component", "Variance")
 
         ##### WIDGETS
         self.slid_pc = Slider(
@@ -343,14 +343,14 @@ class Plotter_Pyinteraph(Plotter):
         atom_to_index = {atom:id for id,atom in enumerate(atoms)}
 
         for _,row in df.iterrows():
-            atom_0_id = atom_to_index[row["res0_num"]]
-            atom_1_id = atom_to_index[row["res1_num"]]
-            matrix[atom_0_id, atom_1_id] = row["occurrence"]
-            matrix[atom_1_id, atom_0_id] = row["occurrence"]
+            atom_0_id = atom_to_index[row.res0_num]
+            atom_1_id = atom_to_index[row.res1_num]
+            matrix[atom_0_id, atom_1_id] = row.occurrence
+            matrix[atom_1_id, atom_0_id] = row.occurrence
 
         ##### FIGURES CREATION
         fig, ax = plt.subplots()
-        self.stylize_ax(ax, title, "X", "Y")
+        self.stylize_ax(ax, title, "Residue", "Residue")
         ax.set_xticks(np.arange(len(atoms), step = 10), labels = atoms[::10])
         ax.set_yticks(np.arange(len(atoms), step = 10), labels = atoms[::10])
 

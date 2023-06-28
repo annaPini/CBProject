@@ -131,10 +131,10 @@ def calc_cmap_AS(coords0, coords1):
 def calc_pca(traj, pca_space_dir, pca_cumvar_dir, path_pca_pcomps):
     print(f">>> Preparing 'pca/{pca_space_dir.name}'...")
 
-    print(">>> Running PCA...")
+    print("...>>> Running PCA...")
     rec_pca = PCA(traj, select = "name CA")
     rec_pca.run()
-    print(">>> Done.")
+    print("...>>> Done.")
 
     space = rec_pca.transform(traj.select_atoms("name CA"), 3)
     cumvar = rec_pca.cumulated_variance
