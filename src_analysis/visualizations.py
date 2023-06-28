@@ -339,18 +339,36 @@ class Plotter_Pyinteraph(Plotter):
         df = pd.read_csv(path_reduced, header = None, usecols = range(len(header)), names = header)
         matrix = np.zeros((N_RESIDS_SUBUNIT, N_RESIDS_SUBUNIT))
 
+        # print(sorted(set(df.res0_num) | set(df.res1_num)))
+
+        x = []
+        ids = {47, 48, 289, 290, 295, 298, 306} # sb
+        # ids = {42, 43, 291, 293, 294, 296, 297, 303, 305} # hc
+
         for _,row in df.iterrows():
             id0 = row.res0_num - 1
             id1 = row.res1_num - 1
             matrix[id0, id1] = row.occurrence
             matrix[id1, id0] = row.occurrence
 
-        ##### FIGURES CREATION
-        fig, ax = plt.subplots()
-        self.stylize_ax(ax, title, "Residue", "Residue")
+            # if {row.res0_num, row.res1_num} & ids:
+            #     x.append((f"{row.res0_num:3} {row.res1_num:3} {row.occurrence:.3f}", row.occurrence))
 
-        ##### PLOTTING
-        self.plot_heatmap(fig, ax, matrix, "hot")
+            if row.occurrence > 20:
+                x.append((f"{row.res0_num:3} {row.res1_num:3} {row.occurrence:.3f}", row.occurrence))
+
+
+        x.sort(key = lambda t: t[1], reverse = True)
+        print(*[e for e,_ in x], sep = '\n')
+
+
+        #
+        # ##### FIGURES CREATION
+        # fig, ax = plt.subplots()
+        # self.stylize_ax(ax, title, "Residue", "Residue")
+        #
+        # ##### PLOTTING
+        # self.plot_heatmap(fig, ax, matrix, "hot")
 
 
 # ////////////////////////////////////////////////////////////////////////////// RAMA
