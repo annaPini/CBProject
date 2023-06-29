@@ -324,17 +324,17 @@ if __name__ == "__main__":
     parser.add_argument("-c", "--calc", action = "store_true", help = docs_main["calc"])
     parser.add_argument("-b", "--bse", action = "store_true", help = docs_main["bse"])
     parser.add_argument("-l", "--cluster", action = "store_true", help = docs_main["cluster"])
-    parser.add_argument("-m0", "--cmap0", action = "store_true", help = docs_main["cmap"]) # GENERAL ANALYSIS
-    parser.add_argument("-m1", "--cmap1", action = "store_true", help = docs_main["cmap"]) # SPECIFIC ANALYSIS
-    parser.add_argument("-m2", "--cmap2", action = "store_true", help = docs_main["cmap"]) # SPECIFIC ANALYSIS ACTIVE SITE
+    parser.add_argument("-m0", "--cmap0", action = "store_true", help = docs_main["cmap0"]) # GENERAL ANALYSIS
+    parser.add_argument("-m1", "--cmap1", action = "store_true", help = docs_main["cmap1"]) # SPECIFIC ANALYSIS
+    parser.add_argument("-m2", "--cmap2", action = "store_true", help = docs_main["cmap2"]) # SPECIFIC ANALYSIS ACTIVE SITE
     parser.add_argument("-p", "--pca", action = "store_true", help = docs_main["pca"])
     parser.add_argument("-y", "--pyinteraph", action = "store_true", help = docs_main["pyinteraph"])
     parser.add_argument("-a", "--rama", action = "store_true", help = docs_main["rama"])
     parser.add_argument("-g", "--rgyr", action = "store_true", help = docs_main["rgyr"])
-    parser.add_argument("-d0", "--rmsd0", action = "store_true", help = docs_main["rmsd"]) # 2D
-    parser.add_argument("-d1", "--rmsd1", action = "store_true", help = docs_main["rmsd"]) # 1D
-    parser.add_argument("-f0", "--rmsf0", action = "store_true", help = docs_main["rmsf"]) # COMPARE SAME SYSTEM
-    parser.add_argument("-f1", "--rmsf1", action = "store_true", help = docs_main["rmsf"]) # COMPARE DIFFERENT SYSTEMS
+    parser.add_argument("-d0", "--rmsd0", action = "store_true", help = docs_main["rmsd0"]) # 2D
+    parser.add_argument("-d1", "--rmsd1", action = "store_true", help = docs_main["rmsd1"]) # 1D
+    parser.add_argument("-f0", "--rmsf0", action = "store_true", help = docs_main["rmsf0"]) # COMPARE SAME SYSTEM
+    parser.add_argument("-f1", "--rmsf1", action = "store_true", help = docs_main["rmsf1"]) # COMPARE DIFFERENT SYSTEMS
     parser.add_argument("-s", "--sasa", action = "store_true", help = docs_main["sasa"])
     args = parser.parse_args()
 
