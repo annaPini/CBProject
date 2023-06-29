@@ -1,4 +1,4 @@
-from wad_pipeline._params import *
+from wald_pipeline._params import *
 
 import numpy as np
 import MDAnalysis as mda
@@ -17,14 +17,14 @@ def get_box_dimensions(traj, info):
 
 def calc_water_density(traj, info):
     # initialization of values
-    xstep = info.xbox / WAD_DIVISIONS
-    ystep = info.ybox / WAD_DIVISIONS
-    zstep = info.zbox / WAD_DIVISIONS
+    xstep = info.xbox / WALD_DIVISIONS
+    ystep = info.ybox / WALD_DIVISIONS
+    zstep = info.zbox / WALD_DIVISIONS
     steps = np.array([xstep, ystep, zstep])
     frames_inverse = 1 / len(info.frames)
 
     # initialize the density matrix with very high values
-    density = np.zeros((WAD_DIVISIONS, WAD_DIVISIONS, WAD_DIVISIONS)) + WAD_DENSITY_TRESHOLD_UPPER + 1
+    density = np.zeros((WALD_DIVISIONS, WALD_DIVISIONS, WALD_DIVISIONS)) + WALD_DENSITY_TRESHOLD_UPPER + 1
 
     # finding the smallest sub-cube that spans the entire protein
     traj.trajectory[info.ref_frame]
@@ -59,9 +59,10 @@ def calc_water_density(traj, info):
 
         for i,j,k in (water_in_box // steps).astype(int):
             density[i,j,k] += frames_inverse
+    print()
 
     ############################################################################
-    np.save(DIR_DA_WAD / (f"{WAD_NAME}-wet_density.npy"), density, allow_pickle = False)
+    np.save(DIR_DA_WALD / (f"{WALD_NAME}-wald.npy"), density, allow_pickle = False)
 
 
 # //////////////////////////////////////////////////////////////////////////////

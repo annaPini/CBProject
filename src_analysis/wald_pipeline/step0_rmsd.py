@@ -1,6 +1,6 @@
 from _params import *
-from wad_pipeline._params import *
-from wad_pipeline.info import Info
+from wald_pipeline._params import *
+from wald_pipeline.info import Info
 from visualizations import Plotter_RMSD1D
 
 import numpy as np
@@ -8,13 +8,13 @@ import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider, Button
 
 # //////////////////////////////////////////////////////////////////////////////
-class Plotter_RMSD1D_WAD(Plotter_RMSD1D):
+class Plotter_RMSD1D_WALD(Plotter_RMSD1D):
     init_rmsd_treshold = 2
 
     def vis_rmsd1d(self, rmsd_mat0, title = ''):
         self.y = np.zeros(rmsd_mat0.shape[0])
         super().vis_rmsd1d(rmsd_mat0, title)
-        print(f"...>>> WAD frame selection mode.")
+        print(f"...>>> WALD frame selection mode.")
 
     def init_axes(self):
         self.fig = plt.figure(layout = "constrained")
@@ -72,7 +72,7 @@ class Plotter_RMSD1D_WAD(Plotter_RMSD1D):
         self.rmsd_arr0 = self.rmsd_mat0[ref_frame]
         frames = [int(f) for f in self.x[self.rmsd_arr0 <= rmsd_treshold]]
 
-        info = Info(DIR_DA_WAD / f"{RUN_WAD}-info.json")
+        info = Info(DIR_DA_WALD / f"{RUN_WALD}-info.json")
 
         info.update(
             rsmd_treshold = rmsd_treshold,

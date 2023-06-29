@@ -15,11 +15,11 @@ docs_main = dict(
 )
 
 # //////////////////////////////////////////////////////////////////////////////
-docs_wad = dict(
+docs_wald = dict(
     main = """
-  +======================================+
-  | Water Average Density (WAD) pipeline |
-  +======================================+
+  +===============================================+
+  | Water Average Local Densities (WALD) pipeline |
+  +===============================================+
     * Go through step 0 by selecting the reference frame of interest and the allowed RMSD treshold of "similarity".
     * Execute steps 1 and 2.
     * BEFORE step 3:
@@ -33,8 +33,8 @@ docs_wad = dict(
     * Visualize the result with step 4 as many times as needed.
 """,
     rmsd = "description...",
-    vmd = "description...",
     calc = "description...",
+    vmd = "description...",
     meshes = "description...",
     plot = "description...",
 )

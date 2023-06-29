@@ -1,13 +1,13 @@
-from wad_pipeline._params import *
-from wad_pipeline.info import Info
-from wad_pipeline.step0_rmsd import Plotter_RMSD1D_WAD
-from wad_pipeline.step1_vmd import gen_cut_xtc, gen_vmd
-from wad_pipeline.step2_calc import get_box_dimensions, calc_water_density
-from wad_pipeline.step3_meshes import extract_colors, extract_vertices, prepare_faces, extract_faces
-from wad_pipeline.step4_plot import load_vertices_faces, plot_layer, plot_density, plot_protein
+from wald_pipeline._params import *
+from wald_pipeline.info import Info
+from wald_pipeline.step0_rmsd import Plotter_RMSD1D_WALD
+from wald_pipeline.step1_calc import get_box_dimensions, calc_water_density
+from wald_pipeline.step2_vmd import gen_cut_xtc, gen_vmd
+from wald_pipeline.step3_meshes import extract_colors, extract_vertices, prepare_faces, extract_faces
+from wald_pipeline.step4_plot import load_vertices_faces, plot_layer, plot_density, plot_protein
 
 from _params import *
-from documentation import docs_wad
+from documentation import docs_wald
 
 import re, argparse
 import numpy as np
@@ -20,57 +20,56 @@ import plotly.graph_objects as go
 
 # //////////////////////////////////////////////////////////////////////////////
 def choose_frames():
-    plotter = Plotter_RMSD1D_WAD()
+    plotter = Plotter_RMSD1D_WALD()
     plotter.vis_rmsd1d(
-        rmsd_mat0 = np.load(DIR_DA_RMSD / f"{RUN_WAD}.npy"),
-        title = RUN_WAD
+        rmsd_mat0 = np.load(DIR_DA_RMSD / f"{RUN_WALD}.npy"),
+        title = RUN_WALD
     )
     plt.show()
 
 
 # ------------------------------------------------------------------------------
-def prepare_vmd():
-    info = Info(PATH_WAD_INFO)
-
-    PATH_GRO = DIR_DA_TRAJECTORIES / f"{RUN_DETAILED_ANALYSIS}.gro"
-    PATH_XTC = DIR_DA_TRAJECTORIES / f"{RUN_DETAILED_ANALYSIS}.xtc"
-
-    PATH_WAD_GRO = DIR_DA_WAD / f"{WAD_NAME}.gro"
-    PATH_WAD_XTC = DIR_DA_WAD / f"{WAD_NAME}.xtc"
-    PATH_WAD_VMD = DIR_DA_WAD / f"{WAD_NAME}.vmd"
-
-    if not PATH_WAD_GRO.exists():
-        gen_cut_xtc(PATH_GRO, PATH_XTC, PATH_WAD_GRO, PATH_WAD_XTC, info)
-
-    gen_vmd(PATH_WAD_GRO, PATH_WAD_XTC, PATH_WAD_VMD, info)
-
-
-# ------------------------------------------------------------------------------
 def calc_density():
-    info = Info(PATH_WAD_INFO)
+    info = Info(PATH_WALD_INFO)
 
-    PATH_GRO = DIR_DA_TRAJECTORIES / f"{RUN_WAD}.gro"
-    PATH_XTC = DIR_DA_TRAJECTORIES / f"{RUN_WAD}.xtc"
+    PATH_GRO = DIR_DA_TRAJECTORIES / f"{RUN_WALD}.gro"
+    PATH_XTC = DIR_DA_TRAJECTORIES / f"{RUN_WALD}.xtc"
 
     traj = mda.Universe(str(PATH_GRO), str(PATH_XTC))
 
     get_box_dimensions(traj, info)
     calc_water_density(traj, info)
-    print()
+
+
+# ------------------------------------------------------------------------------
+def prepare_vmd():
+    info = Info(PATH_WALD_INFO)
+
+    PATH_GRO = DIR_DA_TRAJECTORIES / f"{RUN_DETAILED_ANALYSIS}.gro"
+    PATH_XTC = DIR_DA_TRAJECTORIES / f"{RUN_DETAILED_ANALYSIS}.xtc"
+
+    PATH_WALD_GRO = DIR_DA_WALD / f"{WALD_NAME}.gro"
+    PATH_WALD_XTC = DIR_DA_WALD / f"{WALD_NAME}.xtc"
+    PATH_WALD_VMD = DIR_DA_WALD / f"{WALD_NAME}.vmd"
+
+    if not PATH_WALD_GRO.exists():
+        gen_cut_xtc(PATH_GRO, PATH_XTC, PATH_WALD_GRO, PATH_WALD_XTC, info)
+
+    gen_vmd(PATH_WALD_GRO, PATH_WALD_XTC, PATH_WALD_VMD, info)
 
 
 # ------------------------------------------------------------------------------
 def obj_converter():
-    info = Info(PATH_WAD_INFO)
+    info = Info(PATH_WALD_INFO)
 
     ####################################### MTL
-    print(f">>> Parsing {WAD_NAME}.mtl")
-    mat_names, mat_colors, colors = extract_colors(DIR_DA_WAD / f"{WAD_NAME}.mtl")
+    print(f">>> Parsing {WALD_NAME}.mtl")
+    mat_names, mat_colors, colors = extract_colors(DIR_DA_WALD / f"{WALD_NAME}.mtl")
 
 
     ####################################### OBJ
-    print(f">>> Parsing {WAD_NAME}.obj")
-    with open(DIR_DA_WAD / f"{WAD_NAME}.obj", 'r') as file: obj = file.read()
+    print(f">>> Parsing {WALD_NAME}.obj")
+    with open(DIR_DA_WALD / f"{WALD_NAME}.obj", 'r') as file: obj = file.read()
 
 
     repr_indexes = [g.start() for g in re.finditer("\ng.*", obj)]
@@ -107,20 +106,20 @@ def obj_converter():
         repr = obj[repr_start : repr_end]
 
         print(f"...>>> Extracting vertices for repr {i}...")
-        n_vertices = extract_vertices(repr, f"{WAD_NAME}-mesh_v{i}.npy")
+        n_vertices = extract_vertices(repr, f"{WALD_NAME}-mesh_v{i}.npy")
 
         print(f"...>>> Extracting faces for repr {i}...")
         faces_str = prepare_faces(repr)
 
         if faces_str:
-            extract_faces(faces_str, n_vertices, colors, f"{WAD_NAME}-mesh_f{i}.csv")
+            extract_faces(faces_str, n_vertices, colors, f"{WALD_NAME}-mesh_f{i}.csv")
         else:
             print(f"...>>> No faces found for repr {i}, skipping...")
 
 
 # ------------------------------------------------------------------------------
 def visualize():
-    info = Info(PATH_WAD_INFO)
+    info = Info(PATH_WALD_INFO)
     fig = go.Figure()
 
     plot_density(fig, info)
@@ -141,16 +140,16 @@ def visualize():
 
 # //////////////////////////////////////////////////////////////////////////////
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description = docs_wad["main"], formatter_class = RawDescriptionHelpFormatter)
-    parser.add_argument("-0", "--rmsd", action = "store_true", help = docs_wad["rmsd"])
-    parser.add_argument("-1", "--vmd", action = "store_true", help = docs_wad["vmd"])
-    parser.add_argument("-2", "--calc", action = "store_true", help = docs_wad["calc"])
-    parser.add_argument("-3", "--meshes", action = "store_true", help = docs_wad["meshes"])
-    parser.add_argument("-4", "--plot", action = "store_true", help = docs_wad["plot"])
+    parser = argparse.ArgumentParser(description = docs_wald["main"], formatter_class = RawDescriptionHelpFormatter)
+    parser.add_argument("-0", "--rmsd", action = "store_true", help = docs_wald["rmsd"])
+    parser.add_argument("-1", "--calc", action = "store_true", help = docs_wald["calc"])
+    parser.add_argument("-2", "--vmd", action = "store_true", help = docs_wald["vmd"])
+    parser.add_argument("-3", "--meshes", action = "store_true", help = docs_wald["meshes"])
+    parser.add_argument("-4", "--plot", action = "store_true", help = docs_wald["plot"])
     args = parser.parse_args()
 
     if not (args.rmsd | args.vmd | args.calc | args.meshes | args.plot):
-        print(">>> Refer to the documentation (wad.py -h) for how to follow correctly the WAD pipeline. Closing...")
+        print(">>> Refer to the documentation (wald.py -h) for how to follow correctly the WALD pipeline. Closing...")
 
     if args.rmsd: choose_frames()
     if args.vmd: prepare_vmd()

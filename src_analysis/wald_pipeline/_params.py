@@ -1,18 +1,18 @@
 from pathlib import Path
 
 # //////////////////////////////////////////////////////////////////////////////
-RUN_WAD = "mt2_rep0"
-WAD_DIVISIONS = 20
-WAD_DENSITY_TRESHOLD_LOWER = 0
-WAD_DENSITY_TRESHOLD_UPPER = 3
+RUN_WALD = "mt2_rep0"
+WALD_DIVISIONS = 20
+WALD_DENSITY_TRESHOLD_LOWER = 0
+WALD_DENSITY_TRESHOLD_UPPER = 3
 
 ###########################################################
 DIR_DA = Path.cwd().parent / "data_analysis"
 DIR_DA_TRAJECTORIES = DIR_DA / "_trajectories"
-DIR_DA_WAD = DIR_DA / "wad"
+DIR_DA_WALD = DIR_DA / "wald"
 
-WAD_NAME = RUN_WAD
-PATH_WAD_INFO = DIR_DA_WAD / f"{WAD_NAME}-info.json"
+WALD_NAME = RUN_WALD
+PATH_WALD_INFO = DIR_DA_WALD / f"{WALD_NAME}-info.json"
 
 
 # //////////////////////////////////////////////////////////////////////////////

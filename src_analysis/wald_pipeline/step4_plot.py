@@ -1,4 +1,4 @@
-from wad_pipeline._params import *
+from wald_pipeline._params import *
 
 import numpy as np
 import pandas as pd
@@ -8,8 +8,8 @@ import plotly.graph_objects as go
 def load_vertices_faces(info):
     vertices = []; faces = []
     for i in range(info.n_repr):
-        vertices_dir = DIR_DA_WAD / f"{WAD_NAME}-mesh_v{i}.npy"
-        faces_dir =    DIR_DA_WAD / f"{WAD_NAME}-mesh_f{i}.csv"
+        vertices_dir = DIR_DA_WALD / f"{WALD_NAME}-mesh_v{i}.npy"
+        faces_dir =    DIR_DA_WALD / f"{WALD_NAME}-mesh_f{i}.csv"
 
         vertices.append(np.load(vertices_dir))
         faces.append(pd.read_csv(faces_dir))
@@ -42,12 +42,12 @@ def plot_layer(fig, vertices, faces = None):
     )
 
 def plot_density(fig, info):
-    density = np.load(DIR_DA_WAD / f"{WAD_NAME}-wet_density.npy")
+    density = np.load(DIR_DA_WALD / f"{WALD_NAME}-wald.npy")
 
     X, Y, Z = np.mgrid[
-        0 : info.xbox : complex(0, WAD_DIVISIONS),
-        0 : info.ybox : complex(0, WAD_DIVISIONS),
-        0 : info.zbox : complex(0, WAD_DIVISIONS),
+        0 : info.xbox : complex(0, WALD_DIVISIONS),
+        0 : info.ybox : complex(0, WALD_DIVISIONS),
+        0 : info.zbox : complex(0, WALD_DIVISIONS),
     ]
 
     fig.add_trace(
@@ -56,8 +56,8 @@ def plot_density(fig, info):
             y = Y.flatten(),
             z = Z.flatten(),
             value =  -density.flatten(),
-            isomin = -WAD_DENSITY_TRESHOLD_UPPER,
-            isomax = -WAD_DENSITY_TRESHOLD_LOWER,
+            isomin = -WALD_DENSITY_TRESHOLD_UPPER,
+            isomax = -WALD_DENSITY_TRESHOLD_LOWER,
             opacity = 0.05, # needs to be small to see through all surfaces
             opacityscale = "uniform",
             surface_count = 50, # needs to be a large number for good volume rendering

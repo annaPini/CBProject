@@ -1,4 +1,4 @@
-from wad_pipeline._params import *
+from wald_pipeline._params import *
 
 import re
 import numpy as np
@@ -26,7 +26,7 @@ def extract_vertices(repr, out_name = ''):
 
     if out_name:
         print(f"...>>> Saving vertices to '{out_name}'...")
-        np.save(DIR_DA_WAD / out_name, vertices, allow_pickle = False)
+        np.save(DIR_DA_WALD / out_name, vertices, allow_pickle = False)
         return vertices.shape[0]
 
     return vertices
@@ -58,7 +58,7 @@ def extract_faces(faces_str, n_vertices, colors, out_name):
     faces["color"] = color
 
     print(f"...>>> Saving faces to '{out_name}'...")
-    faces.to_csv(DIR_DA_WAD / out_name, index = False)
+    faces.to_csv(DIR_DA_WALD / out_name, index = False)
 
 
 # //////////////////////////////////////////////////////////////////////////////

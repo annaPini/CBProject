@@ -1,16 +1,16 @@
 import MDAnalysis as mda
 
 # //////////////////////////////////////////////////////////////////////////////
-def gen_cut_xtc(gro_path, xtc_path, wad_gro_path, wad_xtc_path, info):
+def gen_cut_xtc(gro_path, xtc_path, wald_gro_path, wald_xtc_path, info):
     print(">>> Cutting the frames of interest...")
 
     traj = mda.Universe(str(gro_path), str(xtc_path))
     protein = traj.select_atoms("protein")
 
-    with mda.Writer(str(wad_gro_path), protein.n_atoms) as W:
+    with mda.Writer(str(wald_gro_path), protein.n_atoms) as W:
         W.write(protein)
 
-    with mda.Writer(str(wad_xtc_path), protein.n_atoms) as W:
+    with mda.Writer(str(wald_xtc_path), protein.n_atoms) as W:
         for ts in traj.trajectory[info.frames]:
             W.write(protein)
 
